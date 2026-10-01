@@ -10,7 +10,8 @@ export const WINGS = [{ id, name, years:[from,to], color }]
 export function buildMuseum(scene, NEWS) -> { exhibits:[{ mesh, anchor:Vector3, viewPos:Vector3, news }], path:CatmullRomCurve3, update(t,dt) }
 
 // exhibit.js
-export function makeExhibit(news, index) -> THREE.Group  // ホログラム展示台＋キャンバステクスチャのパネル
+export function makeExhibit(news, index, renderer) -> THREE.Group  // 額装パネル＋台座＋彫刻＋キャプション
+//   group.userData = { news, focus:Vector3(注視点, world化はmain側), light:SpotLight|null, focusTarget:0..1, update(t,dt), sculpt? }
 
 // fx.js
 export function createFX(scene, renderer) -> { update(t,dt,camera), burst(pos,color) }
@@ -30,3 +31,7 @@ export function createAudio() -> { start(), chime(i), setIntensity(x) }  // WebA
 // perf.js
 export function createPerf(renderer) -> { quality:'high'|'mid'|'low', tick(dt), onChange(cb) }
 ```
+
+## 改訂履歴
+- [A] 50日スコープ・非ネオン方針。makeExhibit に renderer 引数と userData 拡張を追加。
+- [A] main.js は exhibit.userData.sculpt があれば burst 位置に使い、無ければ focus を使う。
