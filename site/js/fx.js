@@ -27,28 +27,48 @@ const NOISE = /* glsl */`
   float fbm(vec3 p){ float a = 0.5, s = 0.0; for(int i=0;i<4;i++){ s += a*vnoise(p); p = p*2.03 + 7.1; a *= 0.5; } return s; }
 `;
 
-// ---------- 1) 光芒 ----------
+// ---------- 1) 光芒（解析的ボリューム） ----------
+// 背面だけを描き、カメラ→背面のレイを「シアー（太陽方向への傾き）を解いた空間」で箱と交差させ、
+// 箱内の通過区間を数ステップ積分する。視点が光芒の中に入っても破綻しない本物の体積感。
 const shaftVert = /* glsl */`
-  attribute float aH; varying float vH; varying vec3 vW; varying vec3 vN;
-  void main(){ vH = aH; vec4 w = modelMatrix*vec4(position,1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix)*normal);
+  attribute vec4 aBox; attribute float aTop; varying vec3 vW; varying vec4 vBox; varying float vTop;
+  void main(){ vBox = aBox; vTop = aTop; vec4 w = modelMatrix*vec4(position,1.0); vW = w.xyz;
     gl_Position = projectionMatrix*viewMatrix*w; }`;
 const shaftFrag = /* glsl */`
-  uniform float uTime, uSun, uGain; uniform vec3 uColor;
-  varying float vH; varying vec3 vW; varying vec3 vN;
-  ${NOISE}
+  uniform float uTime, uSun, uGain, uH; uniform vec3 uColor; uniform vec2 uSunOff;
+  varying vec3 vW; varying vec4 vBox; varying float vTop;
+  float h31(vec3 p){ p = fract(p*0.3183099 + .1); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+  float vn(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3.0-2.0*f);
+    return mix(mix(mix(h31(i),h31(i+vec3(1,0,0)),f.x), mix(h31(i+vec3(0,1,0)),h31(i+vec3(1,1,0)),f.x),f.y),
+               mix(mix(h31(i+vec3(0,0,1)),h31(i+vec3(1,0,1)),f.x), mix(h31(i+vec3(0,1,1)),h31(i+vec3(1,1,1)),f.x),f.y), f.z); }
+  vec3 unshear(vec3 p){ float k = (vTop - p.y) / uH; return vec3(p.x - vBox.x - uSunOff.x*k, p.y, p.z - vBox.y - uSunOff.y*k); }
   void main(){
-    if (abs(vN.y) > 0.6) discard;                       // 上下面は描かない
-    vec3 V = normalize(cameraPosition - vW);
-    float facing = abs(dot(normalize(vN), V));
-    float a = pow(facing, 2.2);                          // 縁ほど薄く＝体積感
-    a *= smoothstep(0.0, 0.06, vH) * mix(1.0, 0.35, vH); // 窓際が最も濃く、床へ向けて減衰
-    a *= 1.0 - smoothstep(0.9, 1.0, vH);
-    // 光の中を漂う埃の筋（ゆっくり下降する低周波ノイズ）
-    float n = fbm(vW*vec3(1.1,0.35,1.1) + vec3(0.0, uTime*0.06, uTime*0.02));
-    a *= 0.55 + 0.9*n;
-    // カメラが光芒の中に入っても白飛びしないよう近距離フェード
-    a *= smoothstep(0.8, 4.0, distance(cameraPosition, vW));
-    gl_FragColor = vec4(uColor * a * uSun * uGain, 1.0);
+    vec3 ro = unshear(cameraPosition), re = unshear(vW);
+    vec3 rd = re - ro; float L = length(rd); rd /= L;
+    vec3 bmin = vec3(-vBox.z*0.5, 0.0, -vBox.w*0.5), bmax = vec3(vBox.z*0.5, vTop, vBox.w*0.5);
+    vec3 inv = 1.0 / (rd + vec3(1e-6));
+    vec3 t0 = (bmin - ro)*inv, t1 = (bmax - ro)*inv;
+    vec3 tn = min(t0,t1), tf = max(t0,t1);
+    float a = max(max(tn.x,tn.y),max(tn.z,0.0)), b = min(min(tf.x,tf.y),min(tf.z,L));
+    if (b <= a) discard;
+    float acc = 0.0; const int N = 5;
+    float dt = (b - a) / float(N);
+    for (int i = 0; i < N; i++) {
+      vec3 q = ro + rd*(a + dt*(float(i) + 0.5));
+      float k = (vTop - q.y) / uH;                                     // 0=窓, 1=床
+      vec2 e = abs(q.xz) / (vec2(vBox.z, vBox.w)*0.5);
+      float soft = (1.0 - smoothstep(0.55, 1.0, e.x)) * (1.0 - smoothstep(0.55, 1.0, e.y)); // 縁を柔らかく
+      float dens = soft * mix(1.0, 0.3, k) * smoothstep(0.0, 0.05, k);
+      vec3 wp = q + vec3(vBox.x + uSunOff.x*k, 0.0, vBox.y + uSunOff.y*k);
+      float n = vn(wp*vec3(0.9,0.3,0.9) + vec3(0.0, uTime*0.05, uTime*0.02)) * 0.65
+              + vn(wp*2.1 + vec3(uTime*0.03, -uTime*0.08, 0.0)) * 0.35;
+      acc += dens * (0.45 + 1.1*n);
+    }
+    acc *= dt;
+    acc *= smoothstep(0.3, 2.5, a + 0.6*(b-a));                      // 目の前で白飛びしない
+    float o = 1.0 - exp(-acc * uGain);                                 // ビア＝ランバート的に飽和
+    o *= exp(-a * 0.045);                                              // 遠方の光芒は霞に溶ける（加算の積み重なり防止）
+    gl_FragColor = vec4(uColor * o * uSun, 1.0);
   }`;
 
 // ---------- 2) 床の光だまり ----------
@@ -103,9 +123,9 @@ const dustVert = /* glsl */`
     vec4 mv = viewMatrix * vec4(w, 1.0);
     gl_Position = projectionMatrix * mv;
     float tw = pow(0.5 + 0.5*sin(uTime*(1.5 + aRnd.w*4.0) + aRnd.x*90.0), 3.0); // 舞う薄片が光を返す瞬き
-    gl_PointSize = clamp(uPixel * (10.0 + 16.0*aRnd.w) / -mv.z, 1.0, 9.0);
+    gl_PointSize = clamp(uPixel * (5.0 + 9.0*aRnd.w*aRnd.w) / -mv.z, 0.75, 4.5);
     vB = beam * (0.35 + 0.9*tw);
-    vA = edge * smoothstep(0.25, 1.2, -mv.z) * (0.06 + 0.94*beam);
+    vA = edge * smoothstep(0.6, 2.2, -mv.z) * (0.04 + 0.96*beam);
   }`;
 const dustFrag = /* glsl */`
   uniform vec3 uColor; uniform float uSun; varying float vB; varying float vA;
@@ -155,7 +175,7 @@ const leafFrag = /* glsl */`
     float lim = 0.42 + 0.07*sin(ang*5.0 + vSeed*40.0) + 0.04*sin(ang*11.0 + vSeed*13.0);
     if (r > lim) discard;
     float crinkle = 0.85 + 0.3*h(floor(vUv*7.0) + vSeed);
-    vec3 col = uGold * (0.18 + 0.75*vDiff) * crinkle + vec3(1.0, 0.86, 0.62) * vSpec * 1.6;
+    vec3 col = uGold * (0.55 + 0.9*vDiff) * crinkle + vec3(1.0, 0.9, 0.7) * vSpec * 2.2;
     gl_FragColor = vec4(col, vA);
   }`;
 
@@ -180,32 +200,35 @@ export function createFX(scene, renderer, opts = {}) {
   const shaftGeos = [], poolGeos = [];
   for (const s of skylights) {
     const top = s.y, bot = 0.0, h = top - bot;
-    const g = new THREE.BoxGeometry(s.w * 0.96, h, s.d * 0.96, 1, 6, 1);
+    const g = new THREE.BoxGeometry(s.w * 0.96, h, s.d * 0.96, 1, 1, 1);
     g.translate(0, bot + h / 2, 0);
-    const pos = g.attributes.position, aH = new Float32Array(pos.count);
+    const pos = g.attributes.position, aBox = new Float32Array(pos.count * 4), aTop = new Float32Array(pos.count);
     for (let i = 0; i < pos.count; i++) {
       const y = pos.getY(i), k = (top - y) / H; // 0=窓, 1=床
-      pos.setX(i, pos.getX(i) + s.x + sunOff.x * k);
-      pos.setZ(i, pos.getZ(i) + s.z + sunOff.y * k);
-      aH[i] = k;
+      pos.setX(i, pos.getX(i) * 1.02 + s.x + sunOff.x * k);
+      pos.setZ(i, pos.getZ(i) * 1.02 + s.z + sunOff.y * k);
+      aBox.set([s.x, s.z, s.w * 0.96, s.d * 0.96], i * 4); aTop[i] = top;
     }
-    g.setAttribute('aH', new THREE.BufferAttribute(aH, 1));
-    g.computeVertexNormals(); g.deleteAttribute('uv');
+    g.setAttribute('aBox', new THREE.BufferAttribute(aBox, 4));
+    g.setAttribute('aTop', new THREE.BufferAttribute(aTop, 1));
+    g.deleteAttribute('uv'); g.deleteAttribute('normal');
     shaftGeos.push(g);
     const kf = (top - 0.0) / H;
     const p = new THREE.PlaneGeometry(s.w * 1.12, s.d * 1.12); p.rotateX(-Math.PI / 2);
     p.translate(s.x + sunOff.x * kf, 0.006, s.z + sunOff.y * kf);
     poolGeos.push(p);
   }
-  const shaftU = { uTime: { value: 0 }, uSun: sunU, uGain: { value: 0.085 }, uColor: { value: SUN_COLOR.clone() } };
+  const SHAFT_GAIN = 0.032;
+  const shaftU = { uTime: { value: 0 }, uSun: sunU, uGain: { value: SHAFT_GAIN }, uColor: { value: SUN_COLOR.clone() },
+    uH: { value: H }, uSunOff: { value: sunOff.clone() } };
   const shafts = new THREE.Mesh(mergeGeometries(shaftGeos), new THREE.ShaderMaterial({
     uniforms: shaftU, vertexShader: shaftVert, fragmentShader: shaftFrag,
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide,
   }));
   shafts.frustumCulled = false; shafts.renderOrder = 5; shafts.name = 'fx-shafts'; group.add(shafts);
   shaftGeos.forEach(g => g.dispose());
 
-  const poolU = { uTime: { value: 0 }, uSun: sunU, uGain: { value: 0.42 }, uColor: { value: SUN_COLOR.clone() }, uPanes: { value: new THREE.Vector2(3, 4) } };
+  const poolU = { uTime: { value: 0 }, uSun: sunU, uGain: { value: 0.34 }, uColor: { value: SUN_COLOR.clone() }, uPanes: { value: new THREE.Vector2(3, 4) } };
   const pools = new THREE.Mesh(mergeGeometries(poolGeos), new THREE.ShaderMaterial({
     uniforms: poolU, vertexShader: poolVert, fragmentShader: poolFrag,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
@@ -283,7 +306,7 @@ export function createFX(scene, renderer, opts = {}) {
     finale(on = true) { glowT = on ? 1 : 0; },
     setDensity(q) {
       dg.setDrawRange(0, Math.floor(count * q));
-      shaftU.uGain.value = 0.085 * (q < 0.5 ? 0.85 : 1);
+      shaftU.uGain.value = SHAFT_GAIN * (q < 0.5 ? 0.85 : 1);
     },
     setPixelRatio(pr) { dustU.uPixel.value = pr; },
     burst(position, color) {

@@ -25,8 +25,9 @@ class H(http.server.SimpleHTTPRequestHandler):
     def log_message(s, *a): pass
     def do_GET(s):
         u = urllib.parse.urlparse(s.path)
-        if u.path in ('/', '/index.html') and 'snap' in urllib.parse.parse_qs(u.query):
-            html = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+        if (u.path == '/' or u.path.endswith('.html')) and 'snap' in urllib.parse.parse_qs(u.query):
+            fp = os.path.join(ROOT, 'index.html' if u.path == '/' else u.path.lstrip('/'))
+            html = open(fp, encoding='utf-8').read()
             html = html.replace('</body>', INJECT + '</body>')
             b = html.encode(); s.send_response(200); s.send_header('Content-Type', 'text/html; charset=utf-8')
             s.send_header('Content-Length', str(len(b))); s.end_headers(); s.wfile.write(b); return

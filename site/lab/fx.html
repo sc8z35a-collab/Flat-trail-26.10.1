@@ -1,0 +1,57 @@
+<!doctype html>
+<!-- Owner: D. fx.js 単体の光量調整ラボ（白トラバーチン回廊の仮組み）。本番には含めない。 -->
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FX LAB (D)</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#cfc8bd}canvas{display:block}</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js", "three/addons/": "../vendor/three/addons/" } }</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { createFX } from '../js/fx.js';
+const q = new URLSearchParams(location.search);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(1); renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#cfc8bd'); scene.fog = new THREE.FogExp2('#d9d3c9', 0.010);
+const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.45;
+const W = 12, H = 7.5, L = 80;
+const wall = new THREE.MeshStandardMaterial({ color: '#ece7de', roughness: 0.92 });
+const floor = new THREE.MeshPhysicalMaterial({ color: '#d8cfc0', roughness: 0.35, clearcoat: 0.4, clearcoatRoughness: 0.3 });
+const add = (g, m, x, y, z) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.receiveShadow = o.castShadow = true; scene.add(o); return o; };
+add(new THREE.PlaneGeometry(W, L).rotateX(-Math.PI / 2), floor, 0, 0, -L / 2 + 12);
+add(new THREE.PlaneGeometry(L, H).rotateY(Math.PI / 2), wall, -W / 2, H / 2, -L / 2 + 12);
+add(new THREE.PlaneGeometry(L, H).rotateY(-Math.PI / 2), wall, W / 2, H / 2, -L / 2 + 12);
+// 天井（天窓の開口つき）
+const skylights = [];
+for (let z = 6; z > -L + 12; z -= 12) skylights.push({ x: 0, y: H, z, w: 3.2, d: 4.6 });
+const ceil = new THREE.MeshStandardMaterial({ color: '#f1ede6', roughness: 0.95, side: THREE.DoubleSide });
+for (const k of skylights) {
+  add(new THREE.BoxGeometry(W, 0.3, 7.4), ceil, 0, H + 0.15, k.z + 6);
+  add(new THREE.BoxGeometry((W - 3.2) / 2, 0.3, 4.6), ceil, -(W + 3.2) / 4, H + 0.15, k.z);
+  add(new THREE.BoxGeometry((W - 3.2) / 2, 0.3, 4.6), ceil, (W + 3.2) / 4, H + 0.15, k.z);
+}
+// 台座＋額
+const stone = new THREE.MeshStandardMaterial({ color: '#e6e0d6', roughness: 0.7 });
+const brass = new THREE.MeshStandardMaterial({ color: '#b8925a', metalness: 1, roughness: 0.3 });
+for (let i = 0; i < 6; i++) { const s = i % 2 ? 1 : -1, z = 2 - i * 6.6;
+  add(new THREE.BoxGeometry(0.8, 1.1, 0.8), stone, s * 3.3, 0.55, z);
+  add(new THREE.TorusKnotGeometry(0.25, 0.08, 96, 12), brass, s * 3.3, 1.5, z);
+  add(new THREE.BoxGeometry(0.06, 1.4, 2.0), brass, s * 5.95, 2.4, z); }
+const sun = new THREE.DirectionalLight('#fff1dc', 2.6); sun.position.set(-1.5 * 6, 7.5 * 6, -1.1 * 6); sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, far: 120 });
+scene.add(sun, sun.target); scene.add(new THREE.HemisphereLight('#fffaf0', '#b9ab95', 0.5));
+const fx = createFX(scene, renderer, { length: L, z0: 12, skylights, hall: { width: W, height: H } });
+const cam = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.05, 160);
+let t = +(q.get('t') || 3);
+const camZ = +(q.get('z') || 10); cam.position.set(0, 1.6, camZ); cam.lookAt(0, 2.0, camZ - 10);
+sun.position.set(-9, 45, camZ - 6.6); sun.target.position.set(0, 0, camZ);
+if (q.has('burst')) setTimeout(() => fx.burst(new THREE.Vector3(-3.3, 1.6, 2), '#c9a25a'), 50);
+if (q.has('finale')) fx.finale(true);
+let last = performance.now();
+function loop(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+  fx.update(t, dt, cam); sun.intensity = 2.6 * fx.sun; renderer.render(scene, cam); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+window.__FT = { renderer, scene, camera: cam, fx, controls: { goTo() {} } };
+</script></body></html>
