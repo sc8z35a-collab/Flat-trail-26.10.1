@@ -9,7 +9,7 @@
 | 6 | ファクトチェック・最新補完 → research/E_factcheck.md | E(実) | DOING |
 | 6b | 50日間(08-12〜10-01)ニュース調査 → research/E_50days.md | E(実) | DOING |
 | 7 | news.js 確定（B+C+D+E統合） | B/C | TODO |
-| 8 | museum.js 建築・回廊 | C | TODO |
+| 8 | museum.js 建築・回廊 | C(実) | DOING |
 | 9 | exhibit.js 展示ホログラム | B | TODO |
 | 10 | fx.js パーティクル/シェーダ | D | TODO |
 | 11 | ui.js/controls.js/style.css | E(実) | DOING |
