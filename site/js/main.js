@@ -26,7 +26,7 @@ async function boot() {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', stencil: false });
   } catch (e) { fatal('WEBGL NOT AVAILABLE', e); return; }
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMapping = THREE.NeutralToneMapping; // 白壁の再現性重視（C提案）
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -36,8 +36,8 @@ async function boot() {
   perf.apply();
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1a1714);
-  scene.fog = new THREE.FogExp2(0x1d1a16, 0.018);
+  scene.background = new THREE.Color(0xcfc8bd);
+  scene.fog = new THREE.FogExp2(0xd9d3c9, 0.010);
   const camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.05, 200);
 
   const audio = createAudio();
