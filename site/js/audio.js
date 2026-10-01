@@ -103,7 +103,11 @@ export function createAudio() {
     comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -18; comp.knee.value = 12; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.4;
     master = ctx.createGain(); master.gain.value = 0;
-    master.connect(comp).connect(ctx.destination);
+    // スマホスピーカー対策: 2.8kHz 付近の耳障り帯域を軽くカット、超低域は再生不能なので整理、低中域を少し持ち上げ
+    const eqHarsh = ctx.createBiquadFilter(); eqHarsh.type = 'peaking'; eqHarsh.frequency.value = 2800; eqHarsh.Q.value = 0.9; eqHarsh.gain.value = -3.5;
+    const eqBody = ctx.createBiquadFilter(); eqBody.type = 'peaking'; eqBody.frequency.value = 420; eqBody.Q.value = 0.8; eqBody.gain.value = 2.5;
+    const hpf = ctx.createBiquadFilter(); hpf.type = 'highpass'; hpf.frequency.value = 45;
+    master.connect(hpf).connect(eqBody).connect(eqHarsh).connect(comp).connect(ctx.destination);
     if (!muted) master.gain.setTargetAtTime(MASTER_VOL, ctx.currentTime + 0.1, 1.2);
 
     // 残響バス（プリディレイ＋コンボルバ＋高域カット）
@@ -253,6 +257,11 @@ export function createAudio() {
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
     const p = voiceOut(px, 1.3);
     src.connect(bp).connect(body).connect(g).connect(p); src.start(t); src.stop(t + 0.12);
+    // ヒールの打撃: 短いピッチ下降のサイン（小さなキック的な芯）
+    const o = ctx.createOscillator(), og = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(150 + Math.random() * 30, t); o.frequency.exponentialRampToValueAtTime(70, t + 0.05);
+    og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(vol * 1.4, t + 0.003); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+    o.connect(og).connect(p); o.start(t); o.stop(t + 0.08);
   }
   let stepBuf = null;
 
@@ -261,7 +270,7 @@ export function createAudio() {
     const t0 = ctx.currentTime + 0.05, n = Math.max(2, Math.floor(dur / 0.52));
     for (let k = 0; k < n; k++) {
       const edge = Math.sin(Math.PI * (k + 0.5) / n); // 出だしと止まりは小さく
-      step(t0 + k * 0.52 + Math.random() * 0.03, 0.05 + 0.07 * edge, k % 2 ? 0.12 : -0.12);
+      step(t0 + k * (0.5 + Math.random() * 0.05) + Math.random() * 0.03, (0.035 + 0.05 * edge) * (0.85 + Math.random() * 0.3), k % 2 ? 0.12 : -0.12);
     }
   }
 

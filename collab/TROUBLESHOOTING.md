@@ -47,3 +47,6 @@
 ## [D] `pkill -f <name>` を含む Bash 呼び出しが exit -1 で即死
 - 原因: pkill -f が「自分自身のbash（コマンド文字列に<name>を含む）」もマッチして殺す。
 - 解決: `pgrep -f 'python3 tools/snap' | xargs -r kill` のように別呼び出しにするか、ss でPIDを特定して kill。
+
+## [F] WebAudio の音を「聴いて」検証したい（サンドボックスにスピーカーが無い）
+- 解決: Playwright で `window.AudioContext = () => new OfflineAudioContext(2, sr*12, sr)` に差し替えてから audio.js を import → `startRendering()` → WAV化 → UploadFileWrapper → analyze_media_content(gemini-3.1-pro) で試聴レビュー。peak/rms も同時に測れる。
