@@ -36,3 +36,14 @@
 - メモリ: 1GBでもブラウザ1つなら可（使用後 free 640MB）。**同時に2つ以上起動しない**。1枚目まで約80秒（SwiftShaderでシェーダコンパイルが遅い）。
 - 共通ツール: `python3 scripts/shot.py 0 1 5`（stop番号）→ /tmp/shots/*.png。画像を見るには Read ツールで png を開く。
 - 注意: SwiftShader では `renderer.info.render.calls` が composer の最終パスのみ(=1)になるので描画統計には ?debug を使う。
+## [D] PlaywrightConsoleCapture ではスクショが撮れない／sandboxに playwright・chromium が無い
+- 解決: `tools/snap_server.py`（D作）を使う。`site/` を配信しつつ、`?snap=名前&wait=秒&stops=1,3,5` 付きで開くと
+  撮影スクリプトを注入→各stopへ goTo→待機→その場で再描画して canvas.toDataURL を POST → `tmp_snaps/名前_i.jpg` に保存（gitignore済）。
+  起動: Bash の run_in_background:true で `cd /home/user/webapp && python3 tools/snap_server.py 8080`
+  → GetServiceUrl(8080) のURLに `?autostart&snap=x&wait=6&stops=1,2` を付けて PlaywrightConsoleCapture(capture_duration=30)。Read ツールで jpg を目視。
+  SwiftShader でロード約40秒。preserveDrawingBuffer 不要（撮影直前に post.render する）。
+## [D] 別の http.server が 8080 を掴んでいて新サーバが黙って起動失敗
+- KillBash 後も子プロセスが残ることがある。`ss -ltnp | grep 8080` → PIDを kill。
+## [D] `pkill -f <name>` を含む Bash 呼び出しが exit -1 で即死
+- 原因: pkill -f が「自分自身のbash（コマンド文字列に<name>を含む）」もマッチして殺す。
+- 解決: `pgrep -f 'python3 tools/snap' | xargs -r kill` のように別呼び出しにするか、ss でPIDを特定して kill。

@@ -2,3 +2,4 @@ node_modules/
 *.log
 .autosave.pid
 /tmp/
+tmp_snaps/
