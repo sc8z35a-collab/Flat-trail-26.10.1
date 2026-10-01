@@ -3,7 +3,7 @@
 |---|---|---|---|
 | 1 | リポジトリ・共有ネットワーク・自動保存構築 | A/F | DONE |
 | 2 | three.js r186 ベンダリング | F | DONE |
-| 3 | 2022-2024 AIニュース調査 → research/B_news.md | B | TODO |
+| 3 | 8月分(08-12〜08-31)調査 → research/B_50days_aug.md | B(実) | DONE |
 | 4 | 2025-2026 AIニュース調査 → research/C_news.md | C | TODO |
 | 5 | 政策/半導体/科学 調査(50日) → research/D_50days.md | D(実) | DOING |
 | 6 | ファクトチェック・最新補完 → research/E_factcheck.md | E(実) | DOING |
