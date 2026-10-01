@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- Owner: B — exhibit.js 単体プレビュー（白壁の一室に展示を並べて近接撮影）。?cat=MODEL,SAFETY&i=0 -->
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>exhibit preview (B)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+JP:wght@400;600;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>html,body{margin:0;height:100%;background:#cfc8bd;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js", "three/addons/": "../vendor/three/addons/" } }</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { makeExhibit } from '../js/exhibit.js';
+const q = new URLSearchParams(location.search);
+const cats = (q.get('cat') || 'MODEL').split(',');
+const view = q.get('view') || 'front';
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+r.setSize(innerWidth, innerHeight); r.setPixelRatio(1);
+r.toneMapping = THREE.NeutralToneMapping; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#d9d3c9');
+const pm = new THREE.PMREMGenerator(r); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.45;
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(40, 8), new THREE.MeshStandardMaterial({ color: '#ece7de', roughness: 0.9 }));
+wall.position.set(0, 4, -0.55); wall.receiveShadow = true; scene.add(wall);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 20), new THREE.MeshPhysicalMaterial({ color: '#cbbfae', roughness: 0.35, clearcoat: 0.4 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+scene.add(new THREE.HemisphereLight(0xfff6ea, 0x8a7a66, 0.8));
+const sun = new THREE.DirectionalLight(0xfff0dc, 1.6); sun.position.set(3, 8, 6); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -8, right: 8, top: 6, bottom: -2 }); sun.shadow.bias = -0.0004; scene.add(sun);
+const N = { date: '2026.08.13', org: 'Google DeepMind', title: 'Gemini 3.7 Flash 公開', titleEn: 'Gemini 3.7 Flash ships three weeks after 3.6',
+  summary: '3.6 Flashからわずか3週間。コーディングとエージェント向けの「最も賢い主力モデル」を、年末まで半額の価格で投入した。', impact: '速度こそが戦略になった', color: '#38e8ff' };
+const cam = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.05, 100);
+const exs = cats.map((c, k) => { const e = makeExhibit({ ...N, category: c, title: k ? N.title + '（' + c + '）' : N.title }, +(q.get('i') || 0) + k, r); e.position.x = k * 3.8; scene.add(e); return e; });
+exs.forEach(e => { const sp = new THREE.SpotLight(0xffe8c8, 30, 12, 0.5, 0.6, 1.6); const ud = e.userData; sp.position.copy(ud.lightPos).add(e.position); sp.target.position.copy(ud.focus).add(e.position); scene.add(sp, sp.target); });
+const cx = (cats.length - 1) * 1.9;
+if (view === 'front') { cam.position.set(cx, 1.6, cats.length > 1 ? 6.5 : 3.6); cam.lookAt(cx, 1.45, 0); }
+else if (view === 'sculpt') { cam.position.set(-1.0, 1.35, 1.25); cam.lookAt(-1.36, 1.15, 0.28); }
+else if (view === 'text') { cam.position.set(0.9, 1.7, 1.5); cam.lookAt(0.9, 1.65, -0.5); }
+else { cam.position.set(cx + 2.8, 1.6, 2.8); cam.lookAt(cx - 0.4, 1.3, 0); }
+let t = 0; exs.forEach(e => e.userData.focusTarget = 1);
+function loop() { t += 1 / 30; exs.forEach(e => e.userData.update(t, 1 / 30)); r.render(scene, cam); requestAnimationFrame(loop); }
+loop(); window.__ready = () => true;
+</script></body></html>

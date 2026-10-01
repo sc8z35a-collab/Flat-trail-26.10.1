@@ -20,11 +20,11 @@ const F_SANS = '"Inter","Helvetica Neue",Arial,sans-serif';
 
 // ---------- レイアウト定数（ローカル座標, m） ----------
 const WALL_Z = -0.55;
-const ART_W = 1.3, ART_H = 0.975;          // 絵画 4:3
+const ART_W = 1.5, ART_H = 1.125;          // 絵画 4:3
 const MAT = 0.12, FRAME = 0.075, FRAME_D = 0.06;
-const ART_X = -0.2, ART_Y = 1.7;
-const TEXT_X = 1.17, TEXT_Y = 1.72, TEXT_W = 0.95, TEXT_H = 1.2;
-const PED_X = -1.36, PED_Z = 0.28, PED_H = 1.0, PED_W = 0.44;
+const ART_X = -0.15, ART_Y = 1.68;
+const TEXT_X = 1.3, TEXT_Y = 1.72, TEXT_W = 0.9, TEXT_H = 0.9;
+const PED_X = -1.42, PED_Z = 0.42, PED_H = 1.0, PED_W = 0.44;
 const NEAR_LOAD = 19, FAR_UNLOAD = 27, LOD_MID = 20, LOD_FAR = 46;
 
 // ---------- 乱数 ----------
@@ -39,7 +39,7 @@ const hashStr = (s) => { let h = 2166136261; for (const c of String(s)) { h ^= c
 function museumColor(hex) {
   const c = new THREE.Color(hex || '#9a7b52');
   const hsl = {}; c.getHSL(hsl);
-  c.setHSL(hsl.h, Math.min(hsl.s, 0.38), THREE.MathUtils.clamp(hsl.l, 0.32, 0.55));
+  c.setHSL(hsl.h, Math.min(hsl.s, 0.3), THREE.MathUtils.clamp(hsl.l, 0.34, 0.5));
   return c;
 }
 const css = (c, a = 1) => `rgba(${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)},${a})`;
@@ -124,14 +124,14 @@ function geos() {
   const frame = new THREE.ExtrudeGeometry(shape, { depth: FRAME_D - 0.02, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 3, curveSegments: 1 });
   frame.computeVertexNormals();
   // スタンションのロープ（懸垂線）
-  const ropeCurve = new THREE.CatmullRomCurve3([-1.15, -0.6, 0, 0.6, 1.15].map((x) => new THREE.Vector3(x, 0.86 - 0.16 * (1 - (x / 1.15) ** 2), 0)));
+  const ropeCurve = new THREE.CatmullRomCurve3([-0.95, -0.5, 0, 0.5, 0.95].map((x) => new THREE.Vector3(x, 0.86 - 0.15 * (1 - (x / 0.95) ** 2), 0)));
   G = {
     frame,
     mat: new THREE.PlaneGeometry(iw, ih),
     art: new THREE.PlaneGeometry(ART_W, ART_H),
     glass: new THREE.PlaneGeometry(iw, ih),
     text: new THREE.PlaneGeometry(TEXT_W, TEXT_H),
-    pool: new THREE.PlaneGeometry(2.9, 2.5),
+    pool: new THREE.PlaneGeometry(3.2, 2.7),
     plinth: new RoundedBoxGeometry(PED_W, PED_H - 0.03, PED_W, 2, 0.008),
     plinthGap: new THREE.BoxGeometry(PED_W - 0.03, 0.03, PED_W - 0.03),
     turntable: new THREE.CylinderGeometry(0.16, 0.17, 0.018, 48),
@@ -200,18 +200,21 @@ function paintArt(g, W, H, n, index, accent) {
     brushRect(W * 0.08, H * (split + 0.03), W * 0.84, H * (0.9 - split), r() > 0.5 ? PALETTE.ochre : PALETTE.sienna, 46);
     brushRect(W * 0.1, H * (split - 0.035), W * 0.8, H * 0.05, PALETTE.ink, 18);
   } else if (style === 'network') { // 黒鉛のネットワーク（ニューラル網の素描）
+    { const wg = g.createRadialGradient(W * 0.5, H * 0.5, H * 0.05, W * 0.5, H * 0.5, W * 0.62); wg.addColorStop(0, css(accent, 0.55)); wg.addColorStop(0.6, css(accent, 0.25)); wg.addColorStop(1, 'rgba(91,70,52,0.35)'); g.fillStyle = wg; g.fillRect(0, 0, W, H);
+      for (let i = 0; i < 26; i++) { g.globalAlpha = 0.05; g.fillStyle = i % 2 ? PALETTE.umber : PALETTE.paper; g.fillRect(0, r() * H, W, (8 + r() * 40) * s); } g.globalAlpha = 1; }
     const pts = []; const N = 70;
     for (let i = 0; i < N; i++) { const a = r() * Math.PI * 2, d = Math.pow(r(), 0.6) * 0.42; pts.push([W * (0.5 + Math.cos(a) * d * 1.25), H * (0.5 + Math.sin(a) * d)]); }
     g.strokeStyle = PALETTE.ink; g.lineCap = 'round';
     for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
       const dx = pts[i][0] - pts[j][0], dy = pts[i][1] - pts[j][1], d = Math.hypot(dx, dy);
-      if (d < 150 * s && r() > 0.35) { g.globalAlpha = 0.12 + (1 - d / (150 * s)) * 0.35; g.lineWidth = (0.6 + r()) * s; g.beginPath(); g.moveTo(pts[i][0], pts[i][1]); g.lineTo(pts[j][0], pts[j][1]); g.stroke(); }
+      if (d < 160 * s && r() > 0.3) { g.globalAlpha = 0.25 + (1 - d / (160 * s)) * 0.5; g.lineWidth = (1.2 + r() * 1.6) * s; g.beginPath(); g.moveTo(pts[i][0], pts[i][1]); g.lineTo(pts[j][0], pts[j][1]); g.stroke(); }
     }
     g.globalAlpha = 1;
-    pts.forEach(([x, y], i) => { g.fillStyle = i % 9 === 0 ? acc : PALETTE.ink; g.beginPath(); g.arc(x, y, (i % 9 === 0 ? 7 : 2 + r() * 2.5) * s, 0, Math.PI * 2); g.fill(); });
+    pts.forEach(([x, y], i) => { g.fillStyle = i % 9 === 0 ? acc : PALETTE.ink; g.beginPath(); g.arc(x, y, (i % 9 === 0 ? 11 : 3 + r() * 3.5) * s, 0, Math.PI * 2); g.fill(); });
     // 金箔の円
-    g.fillStyle = PALETTE.gold; g.globalAlpha = 0.85; g.beginPath(); g.arc(W * (0.2 + r() * 0.6), H * (0.25 + r() * 0.5), 26 * s, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+    g.fillStyle = PALETTE.gold; g.globalAlpha = 0.85; g.beginPath(); g.arc(W * (0.2 + r() * 0.6), H * (0.25 + r() * 0.5), 46 * s, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
   } else if (style === 'strata' || style === 'waves') { // 等高線・地層 / 音の波形
+    { const lg = g.createLinearGradient(0, 0, 0, H); lg.addColorStop(0, css(accent, 0.18)); lg.addColorStop(1, css(accent, 0.5)); g.fillStyle = lg; g.fillRect(0, 0, W, H); }
     const bands = style === 'waves' ? 46 : 34; const f1 = 1 + r() * 2, f2 = 2 + r() * 4, ph = r() * 9;
     for (let k = 0; k < bands; k++) {
       const y0 = H * (0.1 + 0.8 * k / bands);
@@ -222,19 +225,19 @@ function paintArt(g, W, H, n, index, accent) {
         const y = y0 + (Math.sin(u * Math.PI * f1 + k * 0.21 + ph) * 26 + Math.sin(u * Math.PI * f2 * 2 + k * 0.13) * 9) * s * (style === 'waves' ? env * 3 : 1);
         x === 0 ? g.moveTo(x, y) : g.lineTo(x, y);
       }
-      g.strokeStyle = k % 7 === 3 ? acc : PALETTE.umber; g.globalAlpha = k % 7 === 3 ? 0.9 : 0.35; g.lineWidth = (k % 7 === 3 ? 3 : 1.2) * s; g.stroke();
+      g.strokeStyle = k % 7 === 3 ? acc : PALETTE.umber; g.globalAlpha = k % 7 === 3 ? 0.95 : 0.55; g.lineWidth = (k % 7 === 3 ? 5 : 1.8) * s; g.stroke();
     }
     g.globalAlpha = 1;
   } else if (style === 'grid') { // アグネス・マーティン的グリッド＋金箔一枡
-    g.fillStyle = accSoft; g.globalAlpha = 0.22; g.fillRect(W * 0.06, H * 0.08, W * 0.88, H * 0.84); g.globalAlpha = 1;
+    brushRect(W * 0.05, H * 0.07, W * 0.9, H * 0.86, acc, 30);
     const cols = 16, rows = 12; const gx = W * 0.08, gy = H * 0.1, gw = W * 0.84, gh = H * 0.8;
-    g.strokeStyle = PALETTE.slate; g.lineWidth = 1 * s;
-    for (let i = 0; i <= cols; i++) { g.globalAlpha = 0.25 + r() * 0.2; g.beginPath(); g.moveTo(gx + gw * i / cols + (r() - 0.5) * 1.5 * s, gy); g.lineTo(gx + gw * i / cols + (r() - 0.5) * 1.5 * s, gy + gh); g.stroke(); }
-    for (let j = 0; j <= rows; j++) { g.globalAlpha = 0.25 + r() * 0.2; g.beginPath(); g.moveTo(gx, gy + gh * j / rows); g.lineTo(gx + gw, gy + gh * j / rows); g.stroke(); }
+    g.strokeStyle = PALETTE.ink; g.lineWidth = 1.6 * s;
+    for (let i = 0; i <= cols; i++) { g.globalAlpha = 0.4 + r() * 0.25; g.beginPath(); g.moveTo(gx + gw * i / cols + (r() - 0.5) * 1.5 * s, gy); g.lineTo(gx + gw * i / cols + (r() - 0.5) * 1.5 * s, gy + gh); g.stroke(); }
+    for (let j = 0; j <= rows; j++) { g.globalAlpha = 0.4 + r() * 0.25; g.beginPath(); g.moveTo(gx, gy + gh * j / rows); g.lineTo(gx + gw, gy + gh * j / rows); g.stroke(); }
     g.globalAlpha = 1;
     const ci = 2 + ((r() * (cols - 4)) | 0), cj = 1 + ((r() * (rows - 2)) | 0);
     g.fillStyle = PALETTE.gold; g.fillRect(gx + gw * ci / cols + 2 * s, gy + gh * cj / rows + 2 * s, gw / cols - 4 * s, gh / rows - 4 * s);
-    for (let k = 0; k < 18; k++) { const i = (r() * cols) | 0, j = (r() * rows) | 0; g.fillStyle = PALETTE.ink; g.globalAlpha = 0.6; g.fillRect(gx + gw * (i + 0.5) / cols - 2 * s, gy + gh * (j + 0.5) / rows - 2 * s, 4 * s, 4 * s); }
+    for (let k = 0; k < 22; k++) { const i = (r() * cols) | 0, j = (r() * rows) | 0; g.fillStyle = k % 5 ? PALETTE.ink : PALETTE.sienna; g.globalAlpha = 0.75; g.fillRect(gx + gw * i / cols + 3 * s, gy + gh * j / rows + 3 * s, gw / cols - 6 * s, gh / rows - 6 * s); }
     g.globalAlpha = 1;
   } else if (style === 'kintsugi') { // 黒釉に金継ぎ（破断と修復）
     const gr = g.createRadialGradient(W * 0.45, H * 0.4, 10, W * 0.5, H * 0.5, W * 0.7); gr.addColorStop(0, '#3a3530'); gr.addColorStop(1, '#141210');
@@ -282,17 +285,17 @@ function paintWallText(g, W, H, n, index, accent) {
   g.fillText(`No. ${String(index + 1).padStart(2, '0')}   ${(n.category || '').toUpperCase()}`, L, y);
   if ('letterSpacing' in g) g.letterSpacing = '0px';
   y += 46 * s;
-  g.fillStyle = '#2a2520'; g.font = `500 ${118 * s}px ${F_EN}`;
-  g.fillText(String(n.date || '').replace(/-/g, '.'), L - 4 * s, y); y += 136 * s;
+  g.fillStyle = '#2a2520'; g.font = `500 ${104 * s}px ${F_EN}`;
+  g.fillText(String(n.date || '').replace(/-/g, '.'), L - 4 * s, y); y += 118 * s;
   g.fillStyle = css(accent); g.fillRect(L, y, 120 * s, 5 * s); y += 34 * s;
-  g.fillStyle = '#1f1b17'; g.font = `900 ${64 * s}px ${F_JP}`;
-  clampLines(wrap(g, n.title, W - L * 2), 3).forEach((l) => { g.fillText(l, L, y); y += 84 * s; });
+  g.fillStyle = '#1f1b17'; g.font = `900 ${80 * s}px ${F_JP}`;
+  clampLines(wrap(g, n.title, W - L * 2), 2).forEach((l) => { g.fillText(l, L, y); y += 100 * s; });
   y += 2 * s;
-  if (n.titleEn) { g.fillStyle = '#4a4239'; g.font = `italic 500 ${38 * s}px ${F_EN}`; clampLines(wrap(g, n.titleEn, W - L * 2), 2).forEach((l) => { g.fillText(l, L, y); y += 46 * s; }); }
+  if (n.titleEn) { g.fillStyle = '#4a4239'; g.font = `italic 500 ${38 * s}px ${F_EN}`; clampLines(wrap(g, n.titleEn, W - L * 2), 1).forEach((l) => { g.fillText(l, L, y); y += 46 * s; }); }
   y += 14 * s;
   if (n.org) { g.fillStyle = '#7a6d60'; g.font = `600 ${22 * s}px ${F_SANS}`; if ('letterSpacing' in g) g.letterSpacing = `${4 * s}px`; g.fillText(String(n.org).toUpperCase(), L, y); if ('letterSpacing' in g) g.letterSpacing = '0px'; y += 50 * s; }
-  if (n.summary) { g.fillStyle = '#3a332c'; g.font = `400 ${30 * s}px ${F_JP}`; clampLines(wrap(g, n.summary, W - L * 2), Math.max(2, Math.floor((H - y - 90 * s) / (50 * s)))).forEach((l) => { g.fillText(l, L, y); y += 50 * s; }); }
-  if (n.impact) { g.fillStyle = '#6d6257'; g.font = `italic 500 ${28 * s}px ${F_EN}`; g.fillText(`— ${n.impact}`, L, H - 70 * s); }
+  if (n.summary) { g.fillStyle = '#3a332c'; g.font = `400 ${40 * s}px ${F_JP}`; clampLines(wrap(g, n.summary, W - L * 2), Math.max(2, Math.floor((H - y - 80 * s) / (62 * s)))).forEach((l) => { g.fillText(l, L, y); y += 62 * s; }); }
+  if (n.impact) { g.fillStyle = '#6d6257'; g.font = `italic 500 ${28 * s}px ${F_EN}`; g.fillText(`— ${n.impact}`, L, H - 48 * s); }
   g.textBaseline = 'alphabetic';
 }
 
@@ -484,7 +487,7 @@ export function makeExhibit(news, index, renderer) {
   const glass = new THREE.Mesh(G.glass, m.glass); glass.position.z = FRAME_D - 0.008; glass.renderOrder = 2; art.add(glass);
 
   // 壁面キャプション
-  const textLo = lowRes((g, w, h) => paintWallText(g, w, h, n, index, accent), 192, 243, renderer);
+  const textLo = lowRes((g, w, h) => paintWallText(g, w, h, n, index, accent), 224, 224, renderer);
   const textMat = new THREE.MeshStandardMaterial({ map: textLo, transparent: true, roughness: 0.6, depthWrite: false, alphaTest: 0.02 });
   const wallText = new THREE.Mesh(G.text, textMat); wallText.position.set(TEXT_X, TEXT_Y, WALL_Z + 0.003); wallText.renderOrder = 2; group.add(wallText);
 
@@ -492,18 +495,18 @@ export function makeExhibit(news, index, renderer) {
   const ped = new THREE.Group(); ped.position.set(PED_X, 0, PED_Z); group.add(ped);
   const plinth = new THREE.Mesh(G.plinth, m.plinth); plinth.position.y = 0.03 + (PED_H - 0.03) / 2; plinth.castShadow = plinth.receiveShadow = true; ped.add(plinth);
   const gap = new THREE.Mesh(G.plinthGap, m.plinthGap); gap.position.y = 0.015; ped.add(gap);
-  const turntable = new THREE.Mesh(G.turntable, m.brushedBrass); turntable.position.y = PED_H + 0.009; turntable.receiveShadow = true; ped.add(turntable);
-  const sculpt = makeSculpture(n.category); sculpt.position.y = PED_H + 0.018; ped.add(sculpt);
+  const turntable = new THREE.Mesh(G.turntable, m.brushedBrass); turntable.scale.set(1.25, 1, 1.25); turntable.position.y = PED_H + 0.009; turntable.receiveShadow = true; ped.add(turntable);
+  const sculpt = makeSculpture(n.category); sculpt.position.y = PED_H + 0.018; sculpt.scale.setScalar(1.4); ped.add(sculpt);
   const plaqueTex = lowRes((g, w, h) => paintPlaque(g, w, h, n, index), 512, 170, renderer);
   const plaque = new THREE.Mesh(G.plaque, new THREE.MeshStandardMaterial({ map: plaqueTex, metalness: 1, roughness: 0.32, color: 0xffffff }));
   plaque.position.set(0, PED_H - 0.16, PED_W / 2 + 0.005); ped.add(plaque);
   const contact = new THREE.Mesh(G.contact, m.contact); contact.rotation.x = -Math.PI / 2; contact.scale.set(0.95, 0.95, 1); contact.position.y = 0.003; ped.add(contact);
 
   // スタンション＋ベルベットロープ（絵の前）
-  const rail = new THREE.Group(); rail.position.set(ART_X, 0, 0.62); group.add(rail);
-  for (const sx of [-1.15, 1.15]) { const p = new THREE.Mesh(G.post, m.brass); p.position.x = sx; p.castShadow = true; rail.add(p); }
+  const rail = new THREE.Group(); rail.position.set(ART_X + 0.1, 0, 0.66); group.add(rail);
+  for (const sx of [-0.95, 0.95]) { const p = new THREE.Mesh(G.post, m.brass); p.position.x = sx; p.castShadow = true; rail.add(p); }
   const rope = new THREE.Mesh(G.rope, m.velvet); rope.castShadow = true; rail.add(rope);
-  const railShadow = new THREE.Mesh(G.contact, m.contact); railShadow.rotation.x = -Math.PI / 2; railShadow.scale.set(2.8, 0.35, 1); railShadow.position.y = 0.002; rail.add(railShadow);
+  const railShadow = new THREE.Mesh(G.contact, m.contact); railShadow.rotation.x = -Math.PI / 2; railShadow.scale.set(2.4, 0.35, 1); railShadow.position.y = 0.002; rail.add(railShadow);
 
   // ---------- 遅延高解像度テクスチャ ----------
   let hi = null, hiQueued = false, farSince = 0, dist = 1e9;
@@ -514,7 +517,7 @@ export function makeExhibit(news, index, renderer) {
       await ensureFonts(`${n.title || ''}${n.titleEn || ''}${n.summary || ''}${n.org || ''}${n.impact || ''}${n.date || ''}No.0123456789`);
       if (!hiQueued) return; // 待機中にキャンセル
       const a = canvasTex(1024, 768, (g, w, h) => paintArt(g, w, h, n, index, accent), renderer);
-      const t = canvasTex(1024, 1294, (g, w, h) => paintWallText(g, w, h, n, index, accent), renderer);
+      const t = canvasTex(1024, 1024, (g, w, h) => paintWallText(g, w, h, n, index, accent), renderer);
       a.anisotropy = t.anisotropy = anis;
       hi = { a, t }; artMat.map = a; textMat.map = t; hiQueued = false;
     },
@@ -541,7 +544,7 @@ export function makeExhibit(news, index, renderer) {
   group.userData = {
     news: n, index,
     focus: focusLocal,                                  // 照らす/注視する中心（ローカル）
-    focusSculpture: new THREE.Vector3(PED_X, PED_H + 0.3, PED_Z),
+    focusSculpture: new THREE.Vector3(PED_X, PED_H + 0.38, PED_Z),
     lightColor: new THREE.Color(0xffe8c8),
     lightPos: new THREE.Vector3(ART_X, 3.7, 2.0),        // ライトプールの推奨設置位置（ローカル）
     focusTarget: 0,
