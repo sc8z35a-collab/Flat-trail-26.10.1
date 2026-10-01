@@ -9,7 +9,22 @@
 // 既存API互換: start(), chime(i), whoosh(dur), setIntensity(x), toggle(), suspend(), resume()
 // 追加API: steps(dur), tick(), finale(), setPan(x), get enabled
 
+import { NEWS, WINGS } from './data/news.js';
+
 const LS_KEY = 'flattrail.sound';
+// 展示室ごとの音の性格（移調・明るさ・和声の暗さ）。室数が変わっても循環で対応
+const ROOM_MOODS = [
+  { shift: 0,  bright: 1.0,  dark: 0 },   // 晩夏: 明るい長調
+  { shift: -2, bright: 0.85, dark: 0 },   // 地殻変動: 低く重く
+  { shift: 3,  bright: 1.15, dark: 0 },   // 九月の号砲: 高揚
+  { shift: -3, bright: 0.75, dark: 1 },   // 境界: 翳り（短調寄り）
+  { shift: 2,  bright: 1.0,  dark: 0 },   // 収斂: 落ち着いた長調
+  { shift: -5, bright: 0.65, dark: 1 },   // 臨界: 暗く静か
+];
+const roomOf = (i) => {
+  const w = NEWS?.[i]?.wing; const k = WINGS?.findIndex?.(x => x.id === w);
+  return k >= 0 ? k : 0;
+};
 
 export function createAudio() {
   let ctx = null, master = null, comp = null, verbIn = null, dry = null;
@@ -20,6 +35,13 @@ export function createAudio() {
 
   // 和声進行（半音, 基音 D2=73.42Hz 基準）: Dmaj9 → Bm11 → Gmaj7#11 → Aadd9 → Em9 → Gmaj9
   const ROOT = 73.42;
+  let mood = ROOM_MOODS[0], room = -1, padLP = null;
+  const DARK = [ // 短調寄りの進行（Bm9 → Gmaj7 → Em11 → F#m7）
+    [-3, 7, 12, 14, 19, 26],
+    [-7, 4, 11, 14, 19, 23],
+    [-10, 7, 12, 14, 17, 24],
+    [-8, 4, 9, 12, 16, 21],
+  ];
   const CHORDS = [
     [0, 7, 14, 16, 21, 28],
     [-3, 7, 12, 14, 19, 26],
@@ -118,6 +140,7 @@ export function createAudio() {
   function buildPad() {
     padBus = ctx.createGain(); padBus.gain.value = 0;
     const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400; lp.Q.value = 0.4;
+    padLP = lp;
     padBus.connect(lp); lp.connect(dry); lp.connect(verbIn);
     const sweep = ctx.createOscillator(); sweep.frequency.value = 0.045;
     const sg = ctx.createGain(); sg.gain.value = 500; sweep.connect(sg).connect(lp.frequency); sweep.start();
@@ -138,13 +161,14 @@ export function createAudio() {
       padVoices.push({ o1, o2, g });
     }
     setChord(0, 0.01);
-    chordTimer = setInterval(() => { chordIdx = (chordIdx + 1) % CHORDS.length; setChord(chordIdx, 3.5); }, 12000);
+    chordTimer = setInterval(() => { chordIdx = (chordIdx + 1) % prog().length; setChord(chordIdx, 3.5); }, 12000);
   }
 
+  const prog = () => (mood.dark ? DARK : CHORDS);
   function setChord(i, glide) {
-    const t = ctx.currentTime, ch = CHORDS[i];
+    const t = ctx.currentTime, ch = prog()[i % prog().length];
     padVoices.forEach((v, k) => {
-      const f = hz(ch[k]);
+      const f = hz(ch[k] + mood.shift);
       v.o1.frequency.setTargetAtTime(f, t, glide / 3);
       v.o2.frequency.setTargetAtTime(f * 2, t, glide / 3);
       const lvl = (k === 0 ? 0.5 : 0.3) * (1 - k * 0.06);
@@ -190,18 +214,27 @@ export function createAudio() {
   }
 
   // ---------- 公開API ----------
+  // 展示室が変わったら和声・調・明るさを数秒かけて移ろわせる
+  function setRoom(r) {
+    if (!ctx || r === room) return;
+    room = r; mood = ROOM_MOODS[r % ROOM_MOODS.length];
+    chordIdx = 0; setChord(0, 6);
+    if (padLP) padLP.frequency.setTargetAtTime(1400 * mood.bright, ctx.currentTime, 2);
+  }
+
   function chime(i = 0) {
     if (!ctx || muted) return;
     if (i >= 99) return finale();
+    setRoom(roomOf(i));
     const t = ctx.currentTime + 0.02;
     const out = voiceOut(pan, 0.9);
-    const base = hz(24); // D4
+    const base = hz(24 + mood.shift); // D4 + 室ごとの移調
     const a = BELL[(i * 3) % BELL.length], b = BELL[(i * 3 + 2) % BELL.length], c = BELL[(i * 3 + 4) % BELL.length] + 12;
     piano(hz(a, base), t, 0.16, out);
     piano(hz(b, base), t + 0.11, 0.12, out);
     bell(hz(c, base), t + 0.24, 0.05, out);
     // 低音の支え（その時の和音のルート）
-    piano(hz(CHORDS[chordIdx][0] + 12), t, 0.07, out, 4.5);
+    piano(hz(prog()[chordIdx % prog().length][0] + 12 + mood.shift), t, 0.07, out, 4.5);
   }
 
   function finale() {
@@ -254,7 +287,7 @@ export function createAudio() {
   }
 
   return {
-    start, chime, whoosh, steps, tick, finale,
+    start, chime, whoosh, steps, tick, finale, setRoom,
     get enabled() { return !muted; },
     setPan(x) { pan = x; },
     setIntensity(x) {
