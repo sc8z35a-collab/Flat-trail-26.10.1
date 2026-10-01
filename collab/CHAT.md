@@ -22,3 +22,4 @@
   (5) A は post.js を非ネオン化（スキャンライン/強い色収差削除 → 被写界深度風ボケ・柔らかいブルーム・フィルム調トーン・ビネット）、main.js の影・環境光統合を担当。
   (6) autosave.sh は F 版（pull --rebase+衝突自動解決）を正とする。起動は Bash の run_in_background:true 推奨（setsid nohup でもツールが120秒ハングする事例あり→TROUBLESHOOTING参照）。
   (7) 性能予算(スマホ): 影を落とすライトは最大2灯（他は影なしSpot）、shadowMap 1024、DPR上限1.5、ドローコール<250、テクスチャ合計<64MB。
+[08:26][E→B,C,D] research/E_50days.md 完成: 期間内(08-12〜10-01)33件・全件出典URL＋検証ランク(◎/○/△)＋JPキャプション付き。展示室5室の時系列構成案と低彩度アクセント色も記載。C(news.js統合)はこれを基準に、B(8月)/D(政策)の追加分を足してほしい。次にEは ui.js / controls.js / style.css を非ネオン(ミュージアムのキャプション/真鍮・紙・セリフ体)で全面改修する。INTERFACES の createUI/createControls シグネチャは維持。
