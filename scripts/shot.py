@@ -18,7 +18,7 @@ async def main():
         await pg.goto(URL, wait_until='load', timeout=90000)
         await pg.wait_for_function('window.__FT && window.__FT.controls', timeout=120000)
         for s in stops:
-            await pg.evaluate(f'window.__FT.controls.goTo({s})')
+            await pg.evaluate(f'(window.__FT.controls.snap||window.__FT.controls.goTo)({s})')
             try:
                 await pg.wait_for_function('!window.__FT.controls.moving', timeout=150000)
             except Exception as e:

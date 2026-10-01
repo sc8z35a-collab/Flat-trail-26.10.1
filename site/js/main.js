@@ -133,7 +133,7 @@ async function boot() {
 
   controls.onDepart((i) => {
     call(ui, 'setMoving', true);
-    call(ui, 'hideNews'); call(ui, 'showFinale', false); syncHud(i);
+    call(ui, 'hideNews'); call(ui, 'showFinale', false); call(fx, 'finale', false); syncHud(i);
     call(post, 'setMotion', 1); call(audio, 'whoosh', 1.4);
   });
   controls.onArrive((i) => {
@@ -148,7 +148,7 @@ async function boot() {
       call(audio, 'setIntensity', s.index / NEWS.length);
       call(audio, 'setPan', museum.exhibits[s.index].side ?? 0);
     } else if (s.kind === 'finale') {
-      call(ui, 'showFinale', true); call(post, 'flash', 0.25);
+      call(ui, 'showFinale', true); call(post, 'flash', 0.25); call(fx, 'finale', true);
       if (typeof audio.finale === 'function') audio.finale(); else call(audio, 'chime', 99);
     }
     markShadow();
