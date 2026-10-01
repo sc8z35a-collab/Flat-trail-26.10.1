@@ -348,7 +348,7 @@ export function buildMuseum(scene, NEWS, renderer) {
       for (const p of pool) if (!want.includes(p.idx)) p.idx = -1;
       for (const i of want) if (!pool.some(p => p.idx === i)) { const p = pool.find(pp => pp.idx === -1); if (p) { p.idx = i; p.k = 0; p.L.position.copy(wLight[i]); p.L.target.position.copy(wFocus[i]); p.L.target.updateMatrixWorld(); } }
       for (const p of pool) {
-        const goal = p.idx < 0 ? 0 : (p.idx === focusIndex ? 42 : 24);
+        const goal = p.idx < 0 ? 0 : (p.idx === focusIndex ? 22 : 12);
         p.k += (goal - p.k) * Math.min(1, dt * 2.5);
         p.L.intensity = p.k; // visible は切替えない（ライト数変化＝全シェーダ再コンパイルになるため）
       }
