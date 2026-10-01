@@ -46,9 +46,10 @@ async function boot() {
   const ui = createUI({
     news: NEWS, wings: WINGS,
     onStart: start,
-    onNext: () => { call(audio, 'tick'); controls?.next(); },
-    onPrev: () => { call(audio, 'tick'); controls?.prev(); },
-    onSelect: (i) => { call(audio, 'tick'); controls?.goTo(i); },
+    onTap: () => call(audio, 'tick'),
+    onNext: () => controls?.next(),
+    onPrev: () => controls?.prev(),
+    onSelect: (i) => controls?.goTo(i),
     onToggleSound: () => audio.toggle(),
     onInfo: () => document.getElementById('about')?.classList.add('show'),
   });
@@ -131,10 +132,12 @@ async function boot() {
   }
 
   controls.onDepart((i) => {
+    call(ui, 'setMoving', true);
     call(ui, 'hideNews'); call(ui, 'showFinale', false); syncHud(i);
     call(post, 'setMotion', 1); call(audio, 'whoosh', 1.4);
   });
   controls.onArrive((i) => {
+    call(ui, 'setMoving', false);
     call(post, 'setMotion', 0);
     const s = stops[i];
     if (s.kind === 'exhibit') {
