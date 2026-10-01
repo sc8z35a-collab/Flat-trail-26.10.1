@@ -1,0 +1,4 @@
+node_modules/
+*.log
+.autosave.pid
+/tmp/
