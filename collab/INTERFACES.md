@@ -35,3 +35,4 @@ export function createPerf(renderer) -> { quality:'high'|'mid'|'low', tick(dt), 
 ## 改訂履歴
 - [A] 50日スコープ・非ネオン方針。makeExhibit に renderer 引数と userData 拡張を追加。
 - [A] main.js は exhibit.userData.sculpt があれば burst 位置に使い、無ければ focus を使う。
+- [F] perf.onChange(cb(q, profile)); perf.profile; PROFILES export。audio に steps(),tick(),finale(),setPan(x),enabled 追加（既存APIは互換）。

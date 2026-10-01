@@ -9,7 +9,7 @@
 export const PROFILES = {
   low:  { pixelRatio: 1.0,  shadows: false, shadowMap: 512,  bloom: false, dof: false, ssao: false, particles: 0.35, aniso: 2 },
   mid:  { pixelRatio: 1.35, shadows: true,  shadowMap: 1024, bloom: true,  dof: false, ssao: false, particles: 0.6,  aniso: 4 },
-  high: { pixelRatio: 1.75, shadows: true,  shadowMap: 2048, bloom: true,  dof: true,  ssao: true,  particles: 1.0,  aniso: 8 },
+  high: { pixelRatio: 1.5,  shadows: true,  shadowMap: 1024, bloom: true,  dof: true,  ssao: true,  particles: 1.0,  aniso: 8 },
 };
 const LEVELS = ['low', 'mid', 'high'];
 
@@ -53,7 +53,9 @@ export function createPerf(renderer, { initial } = {}) {
 
   const apply = () => {
     const q = LEVELS[idx], p = PROFILES[q];
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, p.pixelRatio));
+    // リーダー決定(7): スマホは DPR 上限 1.5。デスクトップ high のみ 1.75 まで許可
+    const cap = (q === 'high' && !matchMedia('(pointer:coarse)').matches) ? 1.75 : p.pixelRatio;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
     if (renderer.shadowMap) renderer.shadowMap.enabled = p.shadows;
     cbs.forEach(cb => { try { cb(q, p); } catch (e) { console.error('[perf] onChange', e); } });
     if (dbg) dbg.dataset.q = q;
