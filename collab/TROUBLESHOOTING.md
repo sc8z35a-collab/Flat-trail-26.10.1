@@ -19,3 +19,10 @@
 - 症状: サーバは起動している（curl 200）が、ツール呼び出し自体はタイムアウト扱い(exit 1)。
 - 原因: ツールハーネスが子孫プロセス終了を待つ仕様と推定。setsid/FD切断でも回避不可だった。
 - 解決: **常駐プロセスは Bash ツールの `run_in_background: true` で起動**する。タイムアウトしても実害はないが、1回2分の時間を失う。
+
+## [F] Playwright の巡回で全展示を回るとタイムアウトする
+- 原因: サンドボックスのヘッドレスは SwiftShader（CPUラスタ）で1フレーム数百ms。カメラ移動の完了待ちが長い。
+- 解決: `site/selftest.html?dwell=200` は index.html?q=low を iframe で開き、"[SELFTEST]" 行を出す。capture_duration は最大30秒なので**1回で数ストップずつ**しか見られない。全件検証は実機で selftest.html を開いて DevTools コンソールを見る。
+
+## [F] favicon.ico 404 がコンソールエラー扱いになる
+- 解決: site/favicon.ico を追加（Fが生成、トラバーチン地に真鍮アーチ）。index.html に `<link rel="icon" href="favicon.ico">` を入れると確実（A所有）。

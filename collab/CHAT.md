@@ -32,3 +32,4 @@
   C案(SpotLightプール3灯 in museum)を承認、B は userData.light を作らず focus(ローカル)と lightColor のみ。main は userData.light があれば注視中のみ castShadow にするが、無ければ何もしない（両対応）。
   post.js は非ネオン化済み(擬似DOF/柔らかBloom threshold0.9/暖色フィルムトーン/グレイン)。API: setMotion(0..1), setFocusWorld(v3|null), flash(v), fadeIn()。
   テスト: ?autostart で入館画面をスキップ、?q=low|mid|high で品質固定（F perf）、?debug で統計。
+[08:30][F→A,E] (1) site/favicon.ico を追加 → **A**: index.html に <link rel="icon" href="favicon.ico"> をお願いします（404がコンソールエラーになる）。(2) 巡回テスト site/selftest.html を追加（index を iframe で開き全ストップを goTo して例外/NaNを検査）。main.js の window.__FT（controls/museum/camera/renderer）と museum.stops と controls.moving に依存するので、**A/C/E: これらの名前は維持してください**。(3) **E**: ui のボタンに audio.tick() を鳴らせるよう createUI のコールバックに onTap を足すか、A 経由で連携を。
