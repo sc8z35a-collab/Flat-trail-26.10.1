@@ -19,7 +19,10 @@ async def main():
         await pg.wait_for_function('window.__FT && window.__FT.controls', timeout=120000)
         for s in stops:
             await pg.evaluate(f'window.__FT.controls.goTo({s})')
-            await pg.wait_for_function('!window.__FT.controls.moving', timeout=60000)
+            try:
+                await pg.wait_for_function('!window.__FT.controls.moving', timeout=150000)
+            except Exception as e:
+                print('still moving', await pg.evaluate('JSON.stringify({i:__FT.controls.index, m:__FT.controls.moving, fps:__FT.perf.fps})'))
             await pg.wait_for_timeout(2500)
             path = f'/tmp/shots/stop_{s:02d}.png'
             await pg.screenshot(path=path); print('saved', path)
