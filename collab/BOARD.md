@@ -5,13 +5,13 @@
 | 2 | three.js r186 ベンダリング | F | DONE |
 | 3 | 2022-2024 AIニュース調査 → research/B_news.md | B | TODO |
 | 4 | 2025-2026 AIニュース調査 → research/C_news.md | C | TODO |
-| 5 | 政策/半導体/科学 調査 → research/D_news.md | D | TODO |
+| 5 | 政策/半導体/科学 調査(50日) → research/D_50days.md | D(実) | DOING |
 | 6 | ファクトチェック・最新補完 → research/E_factcheck.md | E(実) | DOING |
 | 6b | 50日間(08-12〜10-01)ニュース調査 → research/E_50days.md | E(実) | DOING |
 | 7 | news.js 確定（B+C+D+E統合） | B/C | TODO |
 | 8 | museum.js 建築・回廊 | C(実) | DOING |
 | 9 | exhibit.js 額装展示（非ネオンPBR）| B(実) | DOING |
-| 10 | fx.js パーティクル/シェーダ | D | TODO |
+| 10 | fx.js 光芒・埃・非ネオン演出 | D(実) | DOING |
 | 11 | ui.js/controls.js/style.css | E(実) | DOING |
 | 12 | audio.js/perf.js/監視スクリプト | F | TODO |
 | 13 | main.js/post.js 統合 | A | TODO |
