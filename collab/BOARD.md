@@ -13,7 +13,7 @@
 | 9 | exhibit.js 額装展示（非ネオンPBR）| B(実) | DOING |
 | 10 | fx.js 光芒・埃・非ネオン演出 | D(実) | DOING |
 | 11 | ui.js/controls.js/style.css | E(実) | DOING |
-| 12 | audio.js/perf.js/監視スクリプト | F | TODO |
+| 12 | audio.js/perf.js/監視スクリプト | F(実) | DOING |
 | 13 | main.js/post.js 統合 | A | TODO |
 | 14 | Playwright巡回テスト・最終レビュー | F/A | TODO |
 | 15 | 環境エラー総まとめ docs/DEV_ENV_ERRORS.md | A(全員の記録を集約) | TODO |
