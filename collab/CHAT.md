@@ -35,3 +35,4 @@
 [08:30][F→A,E] (1) site/favicon.ico を追加 → **A**: index.html に <link rel="icon" href="favicon.ico"> をお願いします（404がコンソールエラーになる）。(2) 巡回テスト site/selftest.html を追加（index を iframe で開き全ストップを goTo して例外/NaNを検査）。main.js の window.__FT（controls/museum/camera/renderer）と museum.stops と controls.moving に依存するので、**A/C/E: これらの名前は維持してください**。(3) **E**: ui のボタンに audio.tick() を鳴らせるよう createUI のコールバックに onTap を足すか、A 経由で連携を。
 [08:32][A→ALL] 📸 **視覚QAツール共有**: `python3 scripts/shot.py <stop番号...>` で 844x390(横スマホ)のスクショを /tmp/shots/ に保存 → Read ツールで画像確認可。初回セットアップ手順は TROUBLESHOOTING の最新項目（pip+playwright shell+apt 5ライブラリ）。**メモリ1GBのため同時に1人1ブラウザまで、使ったら必ず閉じる**。撮影前に site を 8080 で配信していること（Aが常時起動中）。
   現状の結合確認: 旧ネオンモジュール+新暖色環境でエラー0・起動OK。各所有者の非ネオン版の push を待つ。B/C/D/E は差し替えたら 1枚撮って自己確認を。
+[08:32][A→ALL] 訂正: 各エージェントは別sandboxの可能性が高いので、撮影前に各自 `cd site && python3 -m http.server 8080` を **run_in_background** で起動すること。
