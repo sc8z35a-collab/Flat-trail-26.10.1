@@ -16,3 +16,4 @@ scripts/autosave.sh, scripts/monitor.sh, scripts/patrol.sh, collab/ALERTS.md, si
 - [08:30] F枠を実エージェントが取得。autosave.sh v2（pull --rebase + 追記型ファイルは両残し/他はリモート優先）、audio.js 全面改修（石造ホールIR、ピアノ/FMベル、靴音、finale、ミュート永続化、iOSアンロック）、perf.js（GPU判定、PROFILES、DPR上限1.5、ピンポン防止、?debug HUD、?q= 固定）。
 - [08:30] scripts/patrol.py（静的知的監視）、scripts/monitor.sh（環境監視）、site/selftest.html + js/selftest.js（ランタイム巡回）、favicon。
 - [08:48] audio: per-room mood (news.js 参照), phone EQ, footstep heel。Offlineレンダ検証 (/tmp/arender.py 手法を TROUBLESHOOTING に記載)。
+- [09:08] museum_f.js（museum.js フォールバック）+ site/f_preview.html。
