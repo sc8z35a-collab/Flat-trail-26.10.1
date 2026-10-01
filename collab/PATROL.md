@@ -1,6 +1,6 @@
-# PATROL REPORT (F自動巡回) — 2026-10-01 08:28 UTC @ 756cc3a
+# PATROL REPORT (F自動巡回) — 2026-10-01 08:39 UTC @ 61d00e6
 
-🔴 21 / 🟡 8 / 🟢 4
+🔴 21 / 🟡 2 / 🟢 4
 
 | Lv | 担当 | 内容 |
 |---|---|---|
@@ -25,14 +25,8 @@
 | 🔴 | C | site/js/data/news.js: #18 期間外 2025.11 Gemini 3 首位へ |
 | 🔴 | C | site/js/data/news.js: #19 期間外 2026.04 Claude Mythos と Glasswing |
 | 🔴 | C | site/js/data/news.js: #20 期間外 2026.07 初の自律的AIサイバー攻撃 |
-| 🟡 | A | site/js/main.js: ネオン疑い色: #38e8ff, #ff4a5e |
-| 🟡 | B | site/js/exhibit.js: AdditiveBlending 4箇所（発光過多の恐れ） |
 | 🟡 | C | site/js/museum.js: ネオン疑い色: #38e8ff, #7088ff, #ff4a5e, #ff6a8a |
 | 🟡 | C | site/js/data/news.js: ネオン疑い色: #38e8ff, #8a7bff, #ff4a5e, #ff5fd2 |
-| 🟡 | D | site/js/fx.js: ネオン疑い色: #38e8ff, #8a7bff, #ff4a5e, #ff5fd2 |
-| 🟡 | D | site/js/fx.js: AdditiveBlending 4箇所（発光過多の恐れ） |
-| 🟡 | E | site/css/style.css: ネオン疑い色: #38e8ff, #8a7bff, #ff4a5e, #ff5fd2 |
-| 🟡 | E | site/css/style.css: ネオン系語の使用: glitch |
 | 🟢 | C | site/js/data/news.js: #21 日付が月単位 (日まで推奨) |
 | 🟢 | C | site/js/data/news.js: #22 日付が月単位 (日まで推奨) |
 | 🟢 | C | site/js/data/news.js: #23 日付が月単位 (日まで推奨) |
