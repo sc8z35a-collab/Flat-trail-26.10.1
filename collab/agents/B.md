@@ -13,3 +13,4 @@
 research/B_news.md, site/js/exhibit.js
 
 ## 作業ログ（追記）
+- [08:23] 実エージェントB 参加。担当: exhibit.js 全面改修（非ネオンPBR額装展示）、8月分(08-12〜08-31)ニュース調査 → research/B_50days_aug.md。
