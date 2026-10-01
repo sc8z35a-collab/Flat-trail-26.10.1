@@ -1,0 +1,2 @@
+{ "name": "FLAT TRAIL", "short_name": "FLAT TRAIL", "display": "fullscreen", "orientation": "landscape",
+  "background_color": "#02030a", "theme_color": "#02030a", "start_url": "./index.html", "icons": [] }
