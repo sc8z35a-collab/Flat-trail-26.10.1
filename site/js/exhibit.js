@@ -170,13 +170,20 @@ function clampLines(lines, n) {
 
 // ---------- 生成絵画（カテゴリ別の作風、シードで一点物） ----------
 const STYLE = {
-  MODEL: 'network', AGENT: 'network', OPEN: 'strata', SCIENCE: 'strata', RESEARCH: 'strata', VOICE: 'waves',
+  MODEL: 'network', AGENT: 'network', ROBOTICS: 'grid', OPEN: 'strata', SCIENCE: 'strata', RESEARCH: 'strata', VOICE: 'waves',
   COMPUTE: 'grid', DEVICE: 'grid', SAFETY: 'kintsugi', SECURITY: 'kintsugi', POLICY: 'enso', LAW: 'enso',
   INDUSTRY: 'field', SOCIETY: 'field', CONSUMER: 'field', VIDEO: 'field',
 };
-function paintArt(g, W, H, n, index, accent) {
+const ALT = { network: 'strata', strata: 'field', kintsugi: 'enso', enso: 'grid', grid: 'network', field: 'kintsugi', waves: 'enso' };
+const styleCounter = new Map();
+function pickStyle(category, index) {
+  const base = STYLE[category] || ['field', 'network', 'strata', 'enso', 'grid', 'kintsugi'][index % 6];
+  const k = styleCounter.get(category) || 0; styleCounter.set(category, k + 1);
+  return [base, ALT[base], ALT[ALT[base]]][k % 3];
+}
+function paintArt(g, W, H, n, index, accent, styleArg) {
   const r = rng(hashStr(n.title) + index * 977);
-  const style = STYLE[n.category] || ['field', 'network', 'strata', 'enso', 'grid', 'kintsugi'][index % 6];
+  const style = styleArg || STYLE[n.category] || 'field';
   const s = W / 1024; // スケール係数（低解像度版でも同じ構図）
   // 下地
   const base = style === 'kintsugi' ? '#1f1d1b' : (style === 'grid' ? PALETTE.cream : PALETTE.linen);
@@ -348,32 +355,69 @@ function inst(geo, mat, n, setter) {
   for (let i = 0; i < n; i++) { setter(o, i); o.updateMatrix(); m.setMatrixAt(i, o.matrix); }
   m.instanceMatrix.needsUpdate = true; m.castShadow = true; return m;
 }
-function makeSculpture(category) {
+// カテゴリ→彫刻種のローテーション（同カテゴリが続いても形が被らない）
+const KINDS = {
+  MODEL: ['knot', 'ribbon', 'knot35', 'bird', 'discs'], AGENT: ['bird', 'arm', 'rings'], ROBOTICS: ['arm'],
+  OPEN: ['cubes'], INDUSTRY: ['rings', 'cubes'], COMPUTE: ['stack', 'monolith', 'cubes'], DEVICE: ['phone'],
+  SAFETY: ['cage', 'split', 'monolith', 'stones', 'scale'], SECURITY: ['split', 'cage'],
+  POLICY: ['scale', 'monolith', 'stones', 'cage', 'knot'], LAW: ['scale', 'monolith', 'split'],
+  SOCIETY: ['stones'], CONSUMER: ['stones', 'phone'], SCIENCE: ['helix', 'cubes', 'discs'], RESEARCH: ['helix'],
+  VOICE: ['discs'], VIDEO: ['ribbon'],
+};
+const kindCounter = new Map();
+function pickKind(category) {
+  const list = KINDS[category] || ['bird', 'knot', 'stones'];
+  const k = kindCounter.get(category) || 0; kindCounter.set(category, k + 1);
+  return list[k % list.length];
+}
+function makeSculpture(kind) {
   const m = mats(); const g = new THREE.Group();
   const add = (mesh) => { mesh.castShadow = true; mesh.receiveShadow = true; g.add(mesh); return mesh; };
-  switch (category) {
-    case 'MODEL': {
+  switch (kind) {
+    case 'knot35': {
+      const k = add(new THREE.Mesh(cached('knot35', () => new THREE.TorusKnotGeometry(0.11, 0.026, 260, 22, 3, 5)), m.bronze)); k.position.y = 0.22; g.userData.spin = k; break;
+    }
+    case 'monolith': { // 黒御影の石板に真鍮の細い象嵌線
+      const slab = add(new THREE.Mesh(cached('mono', () => new RoundedBoxGeometry(0.16, 0.46, 0.06, 3, 0.01)), m.granite)); slab.position.y = 0.23;
+      const inlay = add(new THREE.Mesh(cached('inlay', () => new THREE.BoxGeometry(0.004, 0.36, 0.062)), m.brass)); inlay.position.set(0.03, 0.24, 0);
+      break;
+    }
+    case 'arm': { // 3関節のロボットアーム（真鍮＋陶器）。関節がゆっくり動く
+      const base = add(new THREE.Mesh(cached('armBase', () => new THREE.CylinderGeometry(0.07, 0.085, 0.04, 40)), m.granite)); base.position.y = 0.02;
+      const seg = cached('armSeg', () => new THREE.CapsuleGeometry(0.018, 0.15, 6, 16).translate(0, 0.093, 0));
+      const joint = cached('armJoint', () => new THREE.SphereGeometry(0.028, 24, 16));
+      const j0 = new THREE.Group(); j0.position.y = 0.045; g.add(j0);
+      const parts = []; let parent = j0;
+      for (let i = 0; i < 3; i++) {
+        const jn = new THREE.Mesh(joint, m.brass); jn.castShadow = true; parent.add(jn);
+        const sg = new THREE.Mesh(seg, m.ceramic); sg.castShadow = true; sg.scale.setScalar(1 - i * 0.18); parent.add(sg);
+        const next = new THREE.Group(); next.position.y = 0.186 * (1 - i * 0.18); parent.add(next); parts.push(parent); parent = next;
+      }
+      const grip = new THREE.Mesh(cached('grip', () => new THREE.TorusGeometry(0.022, 0.006, 10, 24, Math.PI * 1.3)), m.brass); grip.castShadow = true; parent.add(grip);
+      g.userData.arm = parts; break;
+    }
+    case 'knot': {
       const k = add(new THREE.Mesh(cached('knot', () => new THREE.TorusKnotGeometry(0.13, 0.038, 220, 28, 2, 3)), m.brass)); k.position.y = 0.24; g.userData.spin = k; break;
     }
-    case 'OPEN': {
+    case 'cubes': {
       const box = cached('cube', () => new RoundedBoxGeometry(0.07, 0.07, 0.07, 2, 0.008));
       add(inst(box, m.marble, 16, (o, i) => { const a = i * 0.62, y = 0.05 + i * 0.03; o.position.set(Math.cos(a) * 0.12, y, Math.sin(a) * 0.12); o.rotation.set(i * 0.4, a, i * 0.2); }));
       break;
     }
-    case 'INDUSTRY': {
+    case 'rings': {
       const tor = cached('ring', () => new THREE.TorusGeometry(0.11, 0.022, 24, 96));
       const a = add(new THREE.Mesh(tor, m.brass)); a.position.set(-0.05, 0.2, 0); a.rotation.y = 0.5;
       const b = add(new THREE.Mesh(tor, m.bronze)); b.position.set(0.05, 0.2, 0); b.rotation.set(Math.PI / 2, 0.5, 0);
       break;
     }
-    case 'COMPUTE': {
+    case 'stack': {
       const slab = cached('slab', () => new RoundedBoxGeometry(0.26, 0.036, 0.26, 2, 0.006));
       const plate = cached('plate', () => new THREE.BoxGeometry(0.2, 0.006, 0.2));
       add(inst(slab, m.granite, 7, (o, i) => { o.position.y = 0.03 + i * 0.05; o.rotation.y = i * 0.13; }));
       add(inst(plate, m.brass, 6, (o, i) => { o.position.y = 0.055 + i * 0.05; o.rotation.y = i * 0.13 + 0.06; }));
       break;
     }
-    case 'SAFETY': {
+    case 'cage': {
       const s = add(new THREE.Mesh(cached('sph', () => new THREE.SphereGeometry(0.095, 48, 32)), m.marble)); s.position.y = 0.2;
       const ico = new THREE.IcosahedronGeometry(0.17, 0); const e = new THREE.EdgesGeometry(ico); const p = e.attributes.position;
       const rod = cached('rod', () => new THREE.CylinderGeometry(0.004, 0.004, 1, 6));
@@ -385,7 +429,7 @@ function makeSculpture(category) {
       }));
       ico.dispose(); e.dispose(); break;
     }
-    case 'SECURITY': {
+    case 'split': {
       const half = cached('hemi', () => new THREE.SphereGeometry(0.12, 48, 24, 0, Math.PI));
       const cap = cached('cap', () => new THREE.CircleGeometry(0.12, 48));
       for (const sx of [-1, 1]) {
@@ -395,7 +439,7 @@ function makeSculpture(category) {
       }
       break;
     }
-    case 'POLICY': case 'LAW': {
+    case 'scale': {
       const post = add(new THREE.Mesh(cached('spost', () => new THREE.CylinderGeometry(0.008, 0.012, 0.42, 16)), m.brass)); post.position.y = 0.21;
       const beam = new THREE.Group(); beam.position.y = 0.42; g.add(beam);
       const bm = new THREE.Mesh(cached('sbeam', () => new THREE.CylinderGeometry(0.006, 0.006, 0.36, 12).rotateZ(Math.PI / 2)), m.brass);
@@ -412,19 +456,19 @@ function makeSculpture(category) {
       const knob = add(new THREE.Mesh(cached('knob', () => new THREE.SphereGeometry(0.014, 16, 12)), m.brass)); knob.position.y = 0.435;
       g.userData.beam = beam; break;
     }
-    case 'SOCIETY': case 'CONSUMER': {
+    case 'stones': {
       const st = cached('stone', () => new THREE.SphereGeometry(1, 40, 24));
       const spec = [[0.11, 0.05, 0.1, m.granite], [0.085, 0.045, 0.08, m.marble], [0.065, 0.04, 0.06, m.granite], [0.045, 0.035, 0.045, m.marble]];
       let y = 0; spec.forEach(([rx, ry, rz, mat], i) => { const s = add(new THREE.Mesh(st, mat)); y += ry * (i ? 1.85 : 1); s.scale.set(rx, ry, rz); s.position.set((i % 2 ? 0.008 : -0.006), y, 0); s.rotation.y = i * 0.8; y += 0; });
       break;
     }
-    case 'DEVICE': {
+    case 'phone': {
       const slab = add(new THREE.Mesh(cached('phone', () => new RoundedBoxGeometry(0.17, 0.34, 0.022, 4, 0.02)), m.ceramic)); slab.position.y = 0.2; slab.rotation.x = -0.12;
       const ring = add(new THREE.Mesh(cached('hring', () => new THREE.TorusGeometry(0.03, 0.004, 12, 48)), m.brass)); ring.position.set(0, 0.28, -0.014); ring.rotation.x = -0.12;
       const stand = add(new THREE.Mesh(cached('stand', () => new THREE.BoxGeometry(0.12, 0.03, 0.08)), m.brushedBrass)); stand.position.y = 0.035;
       break;
     }
-    case 'SCIENCE': case 'RESEARCH': {
+    case 'helix': {
       const bead = cached('bead', () => new THREE.SphereGeometry(0.016, 16, 12));
       const rung = cached('rung', () => new THREE.CylinderGeometry(0.004, 0.004, 1, 6).rotateZ(Math.PI / 2));
       const N = 16;
@@ -432,12 +476,12 @@ function makeSculpture(category) {
       add(inst(rung, m.marble, N, (o, k) => { const a = k * 0.5; o.position.set(0, 0.04 + k * 0.026, 0); o.rotation.y = -a; o.scale.set(0.16, 1, 1); }));
       break;
     }
-    case 'VOICE': {
+    case 'discs': {
       const disc = cached('disc', () => new THREE.CylinderGeometry(1, 1, 0.008, 48));
       add(inst(disc, m.brass, 24, (o, i) => { const r = 0.03 + Math.abs(Math.sin(i * 0.55)) * 0.1 * Math.exp(-Math.pow((i - 12) / 9, 2)); o.position.y = 0.02 + i * 0.017; o.scale.set(r, 1, r); }));
       break;
     }
-    case 'VIDEO': {
+    case 'ribbon': {
       const ribbon = cached('ribbon', () => {
         const geo = new THREE.BufferGeometry(); const segU = 160, segV = 6; const pos = []; const idx = [];
         for (let i = 0; i <= segU; i++) for (let j = 0; j <= segV; j++) {
@@ -451,7 +495,7 @@ function makeSculpture(category) {
       const mat = (m.bronzeDS ??= m.bronze.clone()); mat.side = THREE.DoubleSide;
       const r = add(new THREE.Mesh(ribbon, mat)); r.position.y = 0.22; r.rotation.x = 0.35; g.userData.spin = r; break;
     }
-    default: { // AGENT 他: ブランクーシ「空間の鳥」へのオマージュ
+    default: { // bird: ブランクーシ「空間の鳥」へのオマージュ
       const bird = cached('bird', () => new THREE.LatheGeometry(
         [[0, 0], [0.03, 0], [0.032, 0.02], [0.012, 0.06], [0.01, 0.1], [0.018, 0.16], [0.034, 0.28], [0.046, 0.4], [0.044, 0.5], [0.03, 0.58], [0.012, 0.63], [0, 0.645]]
           .map(([x, y]) => new THREE.Vector2(x, y)), 48));
@@ -470,6 +514,7 @@ const _wp = new THREE.Vector3();
 export function makeExhibit(news, index, renderer) {
   const n = news || {}; const m = mats(); const G = geos();
   const accent = museumColor(n.color);
+  const artStyle = pickStyle(n.category, index);
   const group = new THREE.Group(); group.name = `exhibit-${index}`;
 
   // 壁の光だまり（スポットの当たり）— 通常ブレンド・暖白・低不透明度
@@ -481,7 +526,7 @@ export function makeExhibit(news, index, renderer) {
   const art = new THREE.Group(); art.position.set(ART_X, ART_Y, WALL_Z + 0.012); group.add(art);
   const frame = new THREE.Mesh(G.frame, frameMat); frame.castShadow = true; frame.receiveShadow = true; art.add(frame);
   const matBoard = new THREE.Mesh(G.mat, m.mat); matBoard.position.z = 0.012; matBoard.receiveShadow = true; art.add(matBoard);
-  const artLo = lowRes((g, w, h) => paintArt(g, w, h, n, index, accent), 160, 120, renderer);
+  const artLo = lowRes((g, w, h) => paintArt(g, w, h, n, index, accent, artStyle), 160, 120, renderer);
   const artMat = new THREE.MeshStandardMaterial({ map: artLo, roughness: 0.78, metalness: 0 });
   const canvasMesh = new THREE.Mesh(G.art, artMat); canvasMesh.position.z = 0.016; canvasMesh.receiveShadow = true; art.add(canvasMesh);
   const glass = new THREE.Mesh(G.glass, m.glass); glass.position.z = FRAME_D - 0.008; glass.renderOrder = 2; art.add(glass);
@@ -496,7 +541,7 @@ export function makeExhibit(news, index, renderer) {
   const plinth = new THREE.Mesh(G.plinth, m.plinth); plinth.position.y = 0.03 + (PED_H - 0.03) / 2; plinth.castShadow = plinth.receiveShadow = true; ped.add(plinth);
   const gap = new THREE.Mesh(G.plinthGap, m.plinthGap); gap.position.y = 0.015; ped.add(gap);
   const turntable = new THREE.Mesh(G.turntable, m.brushedBrass); turntable.scale.set(1.25, 1, 1.25); turntable.position.y = PED_H + 0.009; turntable.receiveShadow = true; ped.add(turntable);
-  const sculpt = makeSculpture(n.category); sculpt.position.y = PED_H + 0.018; sculpt.scale.setScalar(1.4); ped.add(sculpt);
+  const sculpt = makeSculpture(pickKind(n.category)); sculpt.position.y = PED_H + 0.018; sculpt.scale.setScalar(1.4); ped.add(sculpt);
   const plaqueTex = lowRes((g, w, h) => paintPlaque(g, w, h, n, index), 512, 170, renderer);
   const plaque = new THREE.Mesh(G.plaque, new THREE.MeshStandardMaterial({ map: plaqueTex, metalness: 1, roughness: 0.32, color: 0xffffff }));
   plaque.position.set(0, PED_H - 0.16, PED_W / 2 + 0.005); ped.add(plaque);
@@ -516,7 +561,7 @@ export function makeExhibit(news, index, renderer) {
     run: async () => {
       await ensureFonts(`${n.title || ''}${n.titleEn || ''}${n.summary || ''}${n.org || ''}${n.impact || ''}${n.date || ''}No.0123456789`);
       if (!hiQueued) return; // 待機中にキャンセル
-      const a = canvasTex(1024, 768, (g, w, h) => paintArt(g, w, h, n, index, accent), renderer);
+      const a = canvasTex(1024, 768, (g, w, h) => paintArt(g, w, h, n, index, accent, artStyle), renderer);
       const t = canvasTex(1024, 1024, (g, w, h) => paintWallText(g, w, h, n, index, accent), renderer);
       a.anisotropy = t.anisotropy = anis;
       hi = { a, t }; artMat.map = a; textMat.map = t; hiQueued = false;
@@ -569,6 +614,10 @@ export function makeExhibit(news, index, renderer) {
       if (sculpt.userData.beam) {
         const tilt = Math.sin(t * 0.6 + index) * 0.09; sculpt.userData.beam.rotation.z = tilt;
         sculpt.userData.pans.forEach((p) => { p.rotation.z = -tilt; });
+      }
+      if (sculpt.userData.arm) {
+        const a = sculpt.userData.arm, w = t * 0.5 + index;
+        a[0].rotation.z = Math.sin(w) * 0.35; a[1].rotation.z = 0.6 + Math.sin(w * 1.3) * 0.4; a[2].rotation.z = 0.5 + Math.cos(w * 0.9) * 0.35;
       }
     },
   };
