@@ -46,7 +46,7 @@ export function muted(hex, fallback = '#a8834a') {
   return `#${to(R)}${to(G)}${to(B)}`;
 }
 
-export function createUI({ news = [], wings = [], onStart, onNext, onPrev, onSelect, onToggleSound, onInfo } = {}) {
+export function createUI({ news = [], wings = [], onStart, onNext, onPrev, onSelect, onToggleSound, onInfo, onTap } = {}) {
   const hud = $('#hud');
   const N = news.length;
 
@@ -114,7 +114,7 @@ export function createUI({ news = [], wings = [], onStart, onNext, onPrev, onSel
     b.style.left = pos(t) + '%'; b.style.setProperty('--lift', `${k * 9}px`);
     b.style.setProperty('--c', muted(n.color));
     b.dataset.i = i; b.setAttribute('aria-label', `${n.date} ${n.title}`);
-    b.addEventListener('click', (e) => { e.stopPropagation(); onSelect?.(i + 1); });
+    b.addEventListener('click', (e) => { e.stopPropagation(); try { onTap?.(); } catch {} onSelect?.(i + 1); });
     b.addEventListener('pointerenter', () => showTip(i));
     b.addEventListener('pointerleave', () => tip.classList.remove('show'));
     timeline.appendChild(b);
@@ -129,7 +129,7 @@ export function createUI({ news = [], wings = [], onStart, onNext, onPrev, onSel
   }
 
   // ---------- ボタン ----------
-  const stop = (fn) => (e) => { e.stopPropagation(); fn?.(e); };
+  const stop = (fn) => (e) => { e.stopPropagation(); try { onTap?.(); } catch {} fn?.(e); };
   $('#btn-next').addEventListener('click', stop(() => onNext?.()));
   $('#btn-prev').addEventListener('click', stop(() => onPrev?.()));
   $('#btn-sound').addEventListener('click', stop((e) => { const on = onToggleSound?.(); e.currentTarget.classList.toggle('off', on === false); }));
