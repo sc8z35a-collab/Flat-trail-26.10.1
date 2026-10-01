@@ -38,5 +38,5 @@ else if (view === 'text') { cam.position.set(0.9, 1.7, 1.5); cam.lookAt(0.9, 1.6
 else { cam.position.set(cx + 2.8, 1.6, 2.8); cam.lookAt(cx - 0.4, 1.3, 0); }
 let t = 0; exs.forEach(e => e.userData.focusTarget = 1);
 function loop() { t += 1 / 30; exs.forEach(e => e.userData.update(t, 1 / 30)); r.render(scene, cam); requestAnimationFrame(loop); }
-loop(); window.__ready = () => true;
+loop(); window.__info = () => ({ calls: r.info.render.calls, tris: r.info.render.triangles, tex: r.info.memory.textures, geo: r.info.memory.geometries, progs: r.info.programs.length, n: exs.length });
 </script></body></html>
