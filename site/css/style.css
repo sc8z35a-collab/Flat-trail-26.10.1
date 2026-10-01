@@ -116,7 +116,7 @@ body.is-started #hud { opacity: 1; }
 
 .hud-top { position: absolute; top: calc(var(--u) * 2.6 + var(--st)); left: calc(2.6vw + var(--sl)); right: calc(2.6vw + var(--sr));
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; pointer-events: none; }
-.brand { font-family: var(--serif); font-weight: 600; letter-spacing: .42em; font-size: max(12px, calc(var(--u) * 3.2)); line-height: 1.1; }
+.brand { font-family: var(--serif); font-weight: 600; letter-spacing: .42em; font-size: max(13px, calc(var(--u) * 3.2)); line-height: 1.1; }
 .brand small { display: block; font-weight: 400; font-style: italic; letter-spacing: .18em; color: var(--ink-3); font-size: .78em; margin-top: 3px; }
 #hud-wing { text-align: center; min-width: 30vw; }
 #hud-wing .room-no { display: block; font-family: var(--serif); font-style: italic; font-size: max(10.5px, calc(var(--u) * 2.6)); letter-spacing: .3em; color: var(--c); }
@@ -137,7 +137,7 @@ body.is-started #hud { opacity: 1; }
 #hud-count i { font-style: italic; color: var(--ink-3); margin: 0 .2em; }
 
 /* ---------- 壁面キャプション（詳細カード） ---------- */
-#card { position: absolute; left: calc(2.6vw + var(--sl)); bottom: calc(var(--u) * 13 + var(--sb)); width: min(40vw, 480px); max-height: calc(100% - var(--u) * 28);
+#card { position: absolute; left: calc(2.6vw + var(--sl)); bottom: calc(var(--u) * 13 + var(--sb)); width: min(44vw, 520px); max-height: calc(100% - var(--u) * 26);
   padding: calc(var(--u) * 2.4) calc(var(--u) * 3.4) calc(var(--u) * 2.2); overflow: hidden;
   background: rgba(247,243,236,.9); backdrop-filter: blur(14px) saturate(1.05); -webkit-backdrop-filter: blur(14px) saturate(1.05);
   box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 18px 40px -18px rgba(40,30,15,.45), 0 2px 6px rgba(40,30,15,.12);
@@ -153,10 +153,10 @@ body.is-started #hud { opacity: 1; }
 #card-date { font-weight: 600; font-size: 1.15em; color: var(--ink); font-variant-numeric: lining-nums tabular-nums; }
 #card-cat { margin-left: auto; font-family: var(--serif); font-weight: 600; font-size: .78em; letter-spacing: .3em; color: var(--ink-2); border: 1px solid var(--rule); padding: 2px 8px 1px 10px; }
 #card-org { position: relative; margin-top: calc(var(--u) * .6); font-family: var(--serif); font-style: italic; font-size: max(11px, calc(var(--u) * 2.9)); letter-spacing: .1em; color: var(--ink-3); }
-#card-title { position: relative; margin-top: calc(var(--u) * 1); font-family: var(--mincho); font-size: max(17px, calc(var(--u) * 5.2)); font-weight: 700; line-height: 1.32; letter-spacing: .04em; color: var(--ink); }
+#card-title { position: relative; margin-top: calc(var(--u) * 1); font-family: var(--mincho); font-size: max(20px, calc(var(--u) * 5.6)); font-weight: 700; line-height: 1.32; letter-spacing: .04em; color: var(--ink); }
 #card-en { position: relative; margin-top: calc(var(--u) * .4); font-family: var(--serif); font-style: italic; font-size: max(12px, calc(var(--u) * 3.2)); color: var(--ink-2); letter-spacing: .02em; transition: opacity .4s; }
 #card-summary { position: relative; margin-top: calc(var(--u) * 1.4); padding-top: calc(var(--u) * 1.4); border-top: 1px solid var(--rule);
-  font-family: var(--sans); font-size: max(11.5px, calc(var(--u) * 3)); line-height: 1.78; letter-spacing: .04em; color: var(--ink-2); text-align: justify; transition: opacity .4s; }
+  font-family: var(--sans); font-size: max(13px, calc(var(--u) * 3.3)); line-height: 1.72; letter-spacing: .04em; color: var(--ink-2); text-align: justify; transition: opacity .4s; }
 #card-summary .ch { opacity: 0; animation: chin .6s var(--ease) forwards; animation-delay: calc(var(--i) * 12ms + 250ms); }
 @keyframes chin { from { opacity: 0; filter: blur(2px); } to { opacity: 1; filter: none; } }
 .card-foot { position: relative; display: flex; gap: 14px; justify-content: space-between; align-items: baseline; margin-top: calc(var(--u) * 1.6);
@@ -258,7 +258,7 @@ body:not(.is-finale) #finale button { pointer-events: none; }
 }
 /* 非常に背の低い横画面（iPhone SE 横など） */
 @media (max-height: 360px) {
-  #card { width: min(44vw, 420px); }
+  #card { width: min(46vw, 460px); }
   #card-summary { line-height: 1.65; }
   .brand small, #hud-wing span:not(.room-no) { display: none; }
 }

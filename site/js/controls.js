@@ -125,6 +125,15 @@ export function createControls(camera, dom, museum) {
     get speed() { return st.moving ? Math.sin(Math.PI * Math.min(1, st.k)) : 0; },
     get zoom() { return st.zoom; },
     goTo, next: () => goTo(st.index + 1), prev: () => goTo(st.index - 1),
+    /** QA/復帰用: アニメーションなしで即座に stop i へ（arrive コールバックは発火する） */
+    snap(i) {
+      i = Math.max(0, Math.min(stops.length - 1, i | 0));
+      if (i !== st.index) { st.prev = st.index; st.index = i; departCbs.forEach(cb => { try { cb(i); } catch (e) { console.error(e); } }); }
+      st.from = st.to = stops[i].t; st.k = 1; st.moving = false; st.lastU = stops[i].t;
+      st.yaw = st.yawT = st.pitch = st.pitchT = st.yawV = st.pitchV = 0; st.zoom = st.zoomT = 0; st.bob = 0;
+      lookS.copy(stops[i].look);
+      arriveCbs.forEach(cb => { try { cb(i); } catch (e) { console.error(e); } });
+    },
     onArrive(cb) { arriveCbs.push(cb); }, onDepart(cb) { departCbs.push(cb); },
     wasDrag: () => !!down?.moved,
     update(dt, t = performance.now() / 1000) {
