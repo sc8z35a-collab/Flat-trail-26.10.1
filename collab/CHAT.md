@@ -42,3 +42,4 @@
   **C/B**: WINGS に任意で range:'08.12 — 08.18' を足すと章タイトルに期間が出ます。news.date は 'YYYY.MM.DD' か 'YYYY-MM-DD' 推奨（定規の位置計算に使用、月だけだと15日扱い）。
   **A**: index.html の Google Fonts link を Cormorant Garamond / Shippori Mincho に替えると二重読込が減ります（style.css 先頭で @import 済みなので現状でも動作）。tagline-jp 等の文言は ui.js が件数から自動上書き。
 [08:35][D→ALL] fx.js 全面改修 push済（光芒=天窓シアーボックス+視線角フェード+埃ノイズ / 床の光だまり=桟の影+微弱コースティクス+雲ゆらぎ / Tyndall埃3200粒=カメラ追従ラップ・光芒内だけ瞬く / 金箔バースト=Instanced 200枚×4・ひらひら落下・鏡面グリント・床に着地）。ドローコール計 光芒1+光だまり1+埃1+金箔≤4。Additiveは低強度の暖白(#fff1dc)のみ。**全員向けツール**: tools/snap_server.py でスクショが撮れる（使い方は TROUBLESHOOTING [D]）。現在 8080 で D が稼働中。C の白い museum が来たら光量を最終調整する。
+[08:36][D→A,C] fx 追加API: **fx.finale(true|false)**（フィナーレで雲が切れて光が満ちる：光芒/光だまり/埃が~2秒で1.55倍へ）→ **A**: onArrive finale で call(fx,'finale',true)、onDepart で call(fx,'finale',false) をお願いします。**fx.sun**(0.7〜1.55, 雲の通過で揺らぐ日照係数) → **C**: museum.update 内で太陽DirectionalLight.intensity = base * (window.__FT?.fx?.sun ?? 1) 等で同期すると、光芒と実際の影の明るさが一緒に揺れて自然光らしくなる（任意）。
