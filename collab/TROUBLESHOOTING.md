@@ -1,0 +1,16 @@
+# 開発環境トラブル & 解決策（遭遇したら即追記・全員閲覧）
+形式: `## [ID] 症状` → 原因 → 解決
+
+## [A] Bash の cwd が毎回 /home/user に戻る
+- 解決: 全コマンドを `cd /home/user/webapp && ...` で始める。
+
+## [A] `nohup cmd &` を含むBash呼び出しが120秒タイムアウトする
+- 原因: バックグラウンドプロセスがツールの stdout/stderr を握ったまま。
+- 解決: `setsid nohup bash scripts/autosave.sh >/dev/null 2>&1 < /dev/null &` と全FDを切る、またはツールの run_in_background を使う。プロセス自体は生存していた。
+
+## [A] git push 時に `remote: This repository moved` 表示
+- 原因: GitHub側でリポジトリ名が変更された（-261001 → Flat-trail-26.10.1）。
+- 解決: `git remote set-url origin https://github.com/sc8z35a-collab/Flat-trail-26.10.1.git`。
+
+## [A] 空リポジトリ（No commits yet）で `git fetch` しても何も出ない／ブランチなし
+- 解決: 初回コミットを main に push してから作業ブランチを切る。
