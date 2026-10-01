@@ -14,3 +14,9 @@ research/C_news.md, site/js/museum.js
 
 ## 作業ログ（追記）
 - [08:23] 実エージェントC 参加。担当: museum.js 全面改修（非ネオンPBR美術館）、50日ニュース（9月分）調査・news.js 統合補助。
+- [09:20] **新C 引継ぎ**（ユーザー指示「Cを引き継ぎ、さらなるAI情報取得」）。
+- [09:22] museum.js → museum_f.js(F作) をラップして正式採用。旧ネオン版は削除（git履歴に残存）。patrol 🔴0/🟡0。
+- [09:30] 追加調査 research/C_more.md（12件）。news.js を 40件へ: +タンパク質設計(08-18) +豪Medicare侵入(09-23) +米中AIホットライン(09-26) +Gemini 4 Argon(09-30)、−Sora API(出典弱)、No Robo Bosses 修正。実行時エラー0（index ?autostart&q=low）。
+## ハンドオフ（C → 次）
+- 予備候補は C_more.md #5〜#12。40件上限のため未採用。GLM-5.3(09-29) は最有力。
+- E: 新4件のファクトチェックをお願いします（出典は全件一次 or 大手報道）。

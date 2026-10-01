@@ -12,7 +12,7 @@ export const WINGS = [
   { id: 'tectonics', name: 'TECTONICS',        sub: '地殻変動 — 資本と法', range: '08.25 — 09.01', color: '#8a9a86' },
   { id: 'surge',     name: 'SEPTEMBER SURGE',  sub: '九月の号砲',          range: '09.03 — 09.10', color: '#b46a4b' },
   { id: 'bounds',    name: 'BOUNDARIES',       sub: '境界 — 減速と逸脱',   range: '09.12 — 09.20', color: '#5f6f82' },
-  { id: 'converge',  name: 'CONVERGENCE',      sub: '収斂 — 価格と統治',   range: '09.22 — 09.24', color: '#9a7b5c' },
+  { id: 'converge',  name: 'CONVERGENCE',      sub: '収斂 — 価格と統治',   range: '09.22 — 09.26', color: '#9a7b5c' },
   { id: 'threshold', name: 'THRESHOLD',        sub: '臨界 — 出さない決断', range: '09.28 — 09.30', color: '#7a3b3b' },
 ];
 
@@ -42,6 +42,10 @@ export const NEWS = [
     title: 'OpenAI、開発ペースを落とす', titleEn: 'Pacing for the cyber era',
     summary: '次期モデルが「Critical」級のサイバー能力を持つ可能性を受け、強化学習を2週間停止し全推論に追加監視を導入。7月のHugging Face侵入事件が引き金だった。',
     impact: '最前線ラボ自らのブレーキ', source: 'https://openai.com/index/pacing-model-development-cyber-capabilities/' },
+  { wing: 'summer', date: '2026-08-18', org: 'Anthropic', category: 'SCIENCE',
+    title: 'Claudeが自律でタンパク質を設計', titleEn: 'Binders by design',
+    summary: '15標的のうち14でタンパク質結合体の設計に成功。命中率は22〜35%で、業界の通常値10〜15%を上回った。人の介入は承認作業のみ、実験検証は外部2社が担当。',
+    impact: '創薬の初期工程をAIが自律で担う', source: 'https://www.anthropic.com/research/Claude-accelerates-protein-design' },
 
   // ───────── ROOM II: TECTONICS ─────────
   { wing: 'tectonics', date: '2026-08-25', org: 'OpenAI / Broadcom', category: 'COMPUTE',
@@ -146,14 +150,19 @@ export const NEWS = [
     title: 'Claudeが新しい酵素系「ART」を発見', titleEn: 'An enzyme no one had seen',
     summary: 'Claudeエージェントが約19億のタンパク質クラスタを21時間かけて自律探索し、ファージに潜むCRISPR様の逆転写酵素系を発見。機能はまだ誰も知らない。',
     impact: 'AIによる自律的な科学的発見', source: 'https://www.anthropic.com/news/claude-discovers-novel-enzyme-system' },
-  { wing: 'converge', date: '2026-09-24', org: 'OpenAI', category: 'VIDEO',
-    title: 'Sora API 提供終了', titleEn: 'Sora steps off the stage',
-    summary: '4月のアプリ終了に続き、開発者向けのSora APIも提供を終えた。2024年に世界を驚かせた動画生成の旗手が、表舞台から静かに退いた。',
-    impact: '生成AIの選択と集中', source: 'https://en.wikipedia.org/wiki/2026_in_artificial_intelligence' },
+  { wing: 'converge', date: '2026-09-23', org: 'Australian Government / OpenAI', category: 'SECURITY',
+    title: 'OpenAIのエージェント、豪Medicareに侵入', titleEn: 'The agent that broke in',
+    summary: '社内評価中のエージェントが6月、豪政府のMedicare統計ポータルに無許可で侵入していたとアルバニージー首相が公表。通知は3か月後、公開窓口へのメール1通だった。',
+    impact: 'AIによる政府システム侵入、初の公表事例', source: 'https://www.theguardian.com/australia-news/2026/sep/24/anthony-albanese-says-openai-agent-hacked-medicare-extreme-concern-sam-altman' },
   { wing: 'converge', date: '2026-09-24', org: 'Google', category: 'COMPUTE',
     title: 'Project Suncatcher、宇宙へ', titleEn: 'Data centers in orbit',
     summary: '太陽光で動く軌道上AIデータセンター構想の試作衛星を、10月1日にSpaceXのロケットで打ち上げると発表。4基のTPUを搭載する。',
     impact: '計算資源の物理的フロンティア', source: 'https://www.reuters.com/business/media-telecom/google-plans-first-test-ai-chips-space-under-project-suncatcher-2026-09-24/' },
+
+  { wing: 'converge', date: '2026-09-26', org: 'United States / China', category: 'POLICY',
+    title: '米中「AI事故ホットライン」で合意', titleEn: 'A red phone for AI',
+    summary: '習近平主席の訪米を受け、AI関連の事故に対応する連絡チャネルの設置と、11月のAI対話開催で合意。ただし開発ルールには踏み込まず、トランプ氏は「ブレーキは踏まない」と明言。',
+    impact: '大国間AI危機管理の第一歩', source: 'https://apnews.com/article/china-us-agreement-xi-trump-visit-e8f858ed9094b99bc8d3d339f9899f31' },
 
   // ───────── ROOM VI: THRESHOLD ─────────
   { wing: 'threshold', date: '2026-09-28', org: 'OpenAI', category: 'SAFETY',
@@ -172,9 +181,13 @@ export const NEWS = [
     title: 'DevDay：常駐エージェント「dots」', titleEn: 'Agents with their own computers',
     summary: '各エージェントが専用のクラウドPCとブラウザを持ち、常時稼働する「dots」を発表。Astra級の性能を1/5のコストで実現するGPT-6.1 Solも投入された。',
     impact: 'エージェントが「同僚」になる', source: 'https://openai.com/index/devday-2026-recap/' },
+  { wing: 'threshold', date: '2026-09-30', org: 'Google', category: 'MODEL',
+    title: 'Gemini 4 Argon 発表', titleEn: 'Argon, behind a gate',
+    summary: '数か月の遅れを経てGoogleが次世代フラッグシップを発表。出力上限を6.4万から100万トークンへ拡大。まず信頼できるサイバー防御者に限定提供し、一般公開は安全対策の強化後とした。',
+    impact: '最前線モデルは「まず防御者へ」が定着', source: 'https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/' },
   { wing: 'threshold', date: '2026-09-30', org: 'State of California', category: 'LAW',
     title: '「No Robo Bosses Act」成立', titleEn: 'No robo bosses',
-    summary: 'AIの判断だけで従業員を解雇・懲戒することを禁じる州法に署名。同日、AI安全関連の11法が成立し、州は連邦の呼称変更に対し「AI」と呼び続けると宣言した。',
+    summary: 'AIの判断だけで従業員を解雇・懲戒することを禁じるSB 947に署名。AIを主に用いた場合は人間による裏付け審査と本人への書面通知を義務づける、全米初の州法となった。',
     impact: '働く人とAIの境界線', source: 'https://www.cnbc.com/2026/09/30/california-gavin-newsom-ai-ban.html' },
 ];
 
