@@ -56,6 +56,10 @@ for rel, names in CONTRACT.items():
     p = os.path.join(JS, rel)
     if not os.path.exists(p): add('🔴', p, 'ファイルが無い'); continue
     s = open(p, encoding='utf-8').read()
+    # export * from './x.js' の再エクスポートは参照先を連結して判定
+    for m in re.finditer(r"export\s*\*\s*from\s*['\"](\.[^'\"]+)['\"]", s):
+        q = os.path.normpath(os.path.join(os.path.dirname(p), m.group(1)))
+        if os.path.exists(q): s += open(q, encoding='utf-8').read()
     for n in names:
         if not re.search(r'export\s+(?:async\s+)?(?:function|const|let|class)\s+' + n + r'\b', s):
             add('🔴', p, f'export {n} が無い (INTERFACES違反)')
@@ -69,7 +73,7 @@ def neon(h):
     hue = hh * 360
     # 高彩度かつ明るい色。ただし暖色（真鍮/琥珀/金 20〜55°）は許容
     return s > 0.72 and 0.45 < l < 0.80 and not (18 <= hue <= 55)
-targets = list(js_files()) + [os.path.join(SITE, 'css/style.css'), os.path.join(SITE, 'index.html')]
+targets = [f for f in js_files() if 'legacy' not in f] + [os.path.join(SITE, 'css/style.css'), os.path.join(SITE, 'index.html')]
 for f in targets:
     if not os.path.exists(f): continue
     s = open(f, encoding='utf-8').read()

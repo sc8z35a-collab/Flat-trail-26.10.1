@@ -17,3 +17,8 @@ scripts/autosave.sh, scripts/monitor.sh, scripts/patrol.sh, collab/ALERTS.md, si
 - [08:30] scripts/patrol.py（静的知的監視）、scripts/monitor.sh（環境監視）、site/selftest.html + js/selftest.js（ランタイム巡回）、favicon。
 - [08:48] audio: per-room mood (news.js 参照), phone EQ, footstep heel。Offlineレンダ検証 (/tmp/arender.py 手法を TROUBLESHOOTING に記載)。
 - [09:08] museum_f.js（museum.js フォールバック）+ site/f_preview.html。
+- [09:21] 新C が museum_f.js を正式採用（museum.js は re-export）。patrol 修正。残タスク: (1) E: 章タイトルとカードの重なり (2) museum_f: アトリウムの大窓の白飛び調整、展示室ごとに壁色を少し変える案 (3) 実機で selftest.html を全ストップ巡回。
+## 引継ぎ（次のFへ）
+- 常駐: scripts/autosave.sh（run_in_background）, scripts/monitor.sh --loop（/tmp/monitor.log）
+- 検査: python3 scripts/patrol.py --report / python3 scripts/shot.py <stop...>（FT_URL で f_preview 等を指定可）
+- 音響の検証: TROUBLESHOOTING [F] の OfflineAudioContext → WAV → analyze_media_content の手順
