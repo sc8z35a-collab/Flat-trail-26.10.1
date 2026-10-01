@@ -9,7 +9,6 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 
 // 50日の窓（ユーザー要件: 2026-10-01 までの50日間）
 const WIN_END = Date.UTC(2026, 9, 1);
-const WIN_START = WIN_END - 49 * 864e5; // 2026-08-13〜10-01 を含む 50日。08-12 も少しはみ出して表示可能
 const DAY = 864e5;
 
 /** 'YYYY.MM.DD' / 'YYYY-MM-DD' / 'YYYY/MM/DD' / 'YYYY.MM' を UTC ms に。失敗時 null */
@@ -86,10 +85,11 @@ export function createUI({ news = [], wings = [], onStart, onNext, onPrev, onSel
   const timeline = $('#timeline');
   timeline.innerHTML = '';
   const ts = news.map(n => parseDate(n.date));
-  const valid = ts.filter(v => v != null);
-  const t0 = Math.min(WIN_START - DAY, ...(valid.length ? valid : [WIN_START]));
-  const t1 = Math.max(WIN_END, ...(valid.length ? valid : [WIN_END]));
-  const pos = (t) => ((t - t0) / (t1 - t0)) * 100;
+  // 定規は常に要件の50日窓（08-12〜10-01）に固定。範囲外のデータは端に寄せる（DOM爆発・ラベル重なり防止）
+  const t0 = Date.UTC(2026, 7, 12), t1 = WIN_END;
+  const outOfRange = ts.filter(v => v == null || v < t0 - DAY || v > t1 + DAY).length;
+  if (outOfRange) console.warn(`[ui] ${outOfRange} news items are outside the 50-day window (2026-08-12..10-01)`);
+  const pos = (t) => Math.max(0, Math.min(100, ((t - t0) / (t1 - t0)) * 100));
   timeline.appendChild(el('div', 'tl-ruler'));
   for (let t = t0; t <= t1; t += DAY) {
     const d = new Date(t);
