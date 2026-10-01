@@ -9,7 +9,8 @@
 //
 // API（INTERFACES.md 互換・拡張）:
 //   createFX(scene, renderer, { length, z0, skylights?, hall?, sunOffset?, count? })
-//     -> { group, update(t,dt,camera?), burst(pos,color?), setDensity(q), setPixelRatio(pr), setSun(v), get sun }
+//     -> { group, update(t,dt,camera?), burst(pos,color?), setDensity(q), setPixelRatio(pr), setSun(v), finale(on), get sun }
+//   fx.sun（0.7〜1.55）は雲の通過による日照係数。museum の太陽光 intensity に掛けると光芒と同期する。
 //   skylights: [{ x, y, z, w, d }]（天窓開口中心のワールド座標・x幅・z奥行き。y=天井高）未指定なら自動配置。
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -271,13 +272,15 @@ export function createFX(scene, renderer, opts = {}) {
   const tmpC = new THREE.Color();
 
   // ---- 雲の通過による日照ゆらぎ ----
-  let sunBase = 1, sun = 1;
+  let sunBase = 1, sun = 1, glow = 0, glowT = 0;
   const cloud = (t) => 0.82 + 0.1 * Math.sin(t * 0.071) + 0.06 * Math.sin(t * 0.193 + 1.3) + 0.03 * Math.sin(t * 0.47 + 4.0);
 
   return {
     group, skylights,
     get sun() { return sun; },
     setSun(v) { sunBase = v; },
+    // フィナーレ: 雲が切れて光が満ちる（光芒・光だまり・埃が徐々に強まる）。on=false で通常へ戻る
+    finale(on = true) { glowT = on ? 1 : 0; },
     setDensity(q) {
       dg.setDrawRange(0, Math.floor(count * q));
       shaftU.uGain.value = 0.085 * (q < 0.5 ? 0.85 : 1);
@@ -291,7 +294,8 @@ export function createFX(scene, renderer, opts = {}) {
       b.u.uT.value = 0; b.m.visible = true;
     },
     update(t, dt, camera) {
-      sun = sunBase * cloud(t);
+      glow += (glowT - glow) * Math.min(1, dt * 0.8);
+      sun = sunBase * (cloud(t) * (1 - glow) + 1.55 * glow);
       shaftU.uTime.value = poolU.uTime.value = dustU.uTime.value = t;
       if (camera) { dustU.uCam.value.copy(camera.position); refreshSky(camera.position.z); }
       for (const b of bursts) if (b.m.visible) { b.u.uT.value += dt; if (b.u.uT.value > LIFE) b.m.visible = false; }
