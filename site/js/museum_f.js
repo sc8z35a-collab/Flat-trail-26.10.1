@@ -94,7 +94,7 @@ export function buildMuseum(scene, NEWS, renderer) {
   const floorMat = new THREE.MeshPhysicalMaterial({ map: trav.map, roughnessMap: trav.rough, roughness: 1, metalness: 0,
     clearcoat: 0.35, clearcoatRoughness: 0.22, envMapIntensity: 0.9 });
   const plasterTex = plaster();
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: plasterTex, roughness: 0.92, metalness: 0, envMapIntensity: 0.6 });
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xe6e0d6, map: plasterTex, roughness: 0.92, metalness: 0, envMapIntensity: 0.6 });
   const ceilMat = new THREE.MeshStandardMaterial({ color: 0xf3efe7, roughness: 0.95, envMapIntensity: 0.5 });
   const stoneMat = new THREE.MeshStandardMaterial({ map: trav.map, roughnessMap: trav.rough, roughness: 1, color: 0xf2ece2, envMapIntensity: 0.7 });
   const oakMat = new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: 0.55, metalness: 0 });
@@ -278,8 +278,8 @@ export function buildMuseum(scene, NEWS, renderer) {
   root.add(fixtures);
 
   // ---------- 照明 ----------
-  const hemi = new THREE.HemisphereLight(0xfff6ea, 0xcfc4b2, 0.85); root.add(hemi);
-  const sun = new THREE.DirectionalLight(0xfff1dc, 2.4);
+  const hemi = new THREE.HemisphereLight(0xfff6ea, 0xb9ad9a, 0.5); root.add(hemi);
+  const sun = new THREE.DirectionalLight(0xfff1dc, 2.0);
   const SUN_DIR = new THREE.Vector3(-0.45, 1, -0.33).normalize();
   sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
   Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 16, bottom: -16, near: 0.5, far: 40 }); sun.shadow.camera.updateProjectionMatrix();
@@ -341,7 +341,7 @@ export function buildMuseum(scene, NEWS, renderer) {
       }
       const cz = camera ? camera.position.z : 8;
       placeSun(cz);
-      sun.intensity = 2.4 * (window.__FT?.fx?.sun ?? 1);
+      sun.intensity = 2.0 * (window.__FT?.fx?.sun ?? 1);
       // ライトプール割当: カメラに近い3展示
       near.sort((a, b) => Math.abs(exhibits[a].anchor.z - cz) - Math.abs(exhibits[b].anchor.z - cz));
       const want = near.slice(0, 3);
