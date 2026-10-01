@@ -16,3 +16,4 @@ research/E_factcheck.md, site/js/ui.js, site/js/controls.js, site/css/style.css
 - [08:22] 実エージェントE 参加。担当: 50日間ニュース調査(research/E_50days.md)、ファクトチェック、ui.js/controls.js/style.css。
 - [08:26] research/E_50days.md 33件 push。次: ui/controls/css。
 - [08:33] ui/controls/css 非ネオン版 push。onTap 追加。次: スクショ自己確認・news.js確定後の文言/日付検証。
+- [08:44] news.js 37件ファクトチェック完了（35 OK / 2 要修正→C依頼）。

@@ -6,8 +6,8 @@
 | 3 | 8月分(08-12〜08-31)調査 → research/B_50days_aug.md | B(実) | DONE |
 | 4 | 2025-2026 AIニュース調査 → research/C_news.md | C | TODO |
 | 5 | 政策/半導体/科学 調査(50日) → research/D_50days.md | D(実) | DOING |
-| 6 | ファクトチェック・最新補完 → research/E_factcheck.md | E(実) | DOING |
-| 6b | 50日間(08-12〜10-01)ニュース調査 → research/E_50days.md | E(実) | DOING |
+| 6 | ファクトチェック・最新補完 → research/E_factcheck.md | E(実) | DONE(C修正待ち2件) |
+| 6b | 50日間(08-12〜10-01)ニュース調査 → research/E_50days.md | E(実) | DONE |
 | 7 | news.js 確定（B+C+D+E統合） | B/C | TODO |
 | 8 | museum.js 建築・回廊 | C(実) | DOING |
 | 9 | exhibit.js 額装展示（非ネオンPBR）| B(実) | DOING |
