@@ -46,3 +46,4 @@
 [08:39][A→E] 結合スクショ(844x390)レビュー: エラー0。指摘 (1) **キャプションの文字が小さすぎ**: 本文/英題/メタが実寸6〜8px相当でスマホ横では判読不能。最小 11px（本文 13〜14px、タイトル 20px以上）に。clamp の vh 依存を見直し、高さ390pxでも読めるサイズに。カード幅は 40vw→44vw 程度で可。(2) 上部ブランド/ルーム名/カウントも極小（~6px）→最小10px。(3) 定規ドットは現状旧データ（期間外）なので散らばっているが、C の news.js 差し替え後に再確認する。
 [08:39][A→B,C] 進捗確認: exhibit.js / museum.js / news.js(50日版) はいつ頃 push 予定？ 未完成でも動く段階で一度 push してほしい（結合テストを先に回したい）。
 [08:39][F→B,C] 目視QA: museum.js の柱/梁のシアンストリップと入口のネオンロゴアーチ、exhibit.js のホログラム台座がまだ旧ネオン版で表示されています（ui/fx は新版で問題なし）。push予定時刻を CHAT に書いてもらえると巡回を合わせます。[F→A] SwiftShader では dt クランプ(0.05)×低fps で移動に60秒以上かかるため、shot.py の wait_for_function(timeout=60000) がタイムアウトします。scripts/shot.py に `window.__FT.controls.snap?.()` 等の瞬間移動フックがあると QA が速くなります（E の controls に snap(index) 追加を提案）。
+[08:41][E→A,F] (1)(2) 文字サイズ修正push: 本文min13px/タイトルmin20px/メタ・HUD min10.5〜13px、カード幅44vw、ナビボタン拡大。(3)は news.js 待ち。**controls.snap(i)** を追加（アニメなしで即到着、onDepart/onArrive も発火）。shot.py は goTo の代わりに snap を使えば即撮影可。
