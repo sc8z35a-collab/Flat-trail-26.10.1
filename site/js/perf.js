@@ -1,33 +1,102 @@
 // perf.js — Owner: F
-// 動的画質制御: FPSの移動平均を監視し high → mid → low を自動切替（ヒステリシス付き）
+// 動的画質制御
+//  - 起動時: GPU名(WEBGL_debug_renderer_info)・端末メモリ・コア数・画面から初期品質を推定
+//  - 実行時: フレーム時間の移動平均を監視し high ↔ mid ↔ low を自動切替（ヒステリシス＋クールダウン）
+//  - 各品質のプロファイル(profile)を公開: 他モジュールはこれを見て影/ポスト/粒子数を決められる
+//  - URL: ?q=high|mid|low で固定, ?debug で FPS/描画統計オーバーレイ
+// API（INTERFACES互換）: createPerf(renderer) -> { quality, tick(dt), onChange(cb), apply(), profile, fps, locked }
+
+export const PROFILES = {
+  low:  { pixelRatio: 1.0,  shadows: false, shadowMap: 512,  bloom: false, dof: false, ssao: false, particles: 0.35, aniso: 2 },
+  mid:  { pixelRatio: 1.35, shadows: true,  shadowMap: 1024, bloom: true,  dof: false, ssao: false, particles: 0.6,  aniso: 4 },
+  high: { pixelRatio: 1.75, shadows: true,  shadowMap: 2048, bloom: true,  dof: true,  ssao: true,  particles: 1.0,  aniso: 8 },
+};
+const LEVELS = ['low', 'mid', 'high'];
+
+function detectGPU(renderer) {
+  let name = '';
+  try {
+    const gl = renderer.getContext();
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    name = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+  } catch {}
+  return String(name || '');
+}
+
+function initialLevel(gpu) {
+  const g = gpu.toLowerCase();
+  const mobile = matchMedia('(pointer:coarse)').matches || /android|iphone|ipad/i.test(navigator.userAgent);
+  const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4;
+  if (/swiftshader|llvmpipe|software|basic render/.test(g)) return 'low';
+  if (/mali-[gt]?[0-9]{2}\b|adreno \(tm\) [3-5]\d\d|powervr|sgx/.test(g)) return 'low';
+  if (mobile) {
+    // Apple A15+ / Adreno 7xx+ / Mali-G7xx+ / Xclipse は mid から開始し、余裕があれば high に上がる
+    if (mem <= 3 || cores <= 4) return 'low';
+    return 'mid';
+  }
+  if (/intel/.test(g) && !/arc/.test(g)) return 'mid';
+  return 'high';
+}
+
 export function createPerf(renderer, { initial } = {}) {
-  const levels = ['low', 'mid', 'high'];
-  const prMax = { low: 1.0, mid: 1.35, high: 1.75 };
-  const isMobile = matchMedia('(pointer:coarse)').matches;
-  let idx = levels.indexOf(initial || (isMobile ? 'mid' : 'high'));
-  if (new URLSearchParams(location.search).has('q')) idx = Math.max(0, levels.indexOf(new URLSearchParams(location.search).get('q')));
+  const qs = new URLSearchParams(location.search);
+  const gpu = detectGPU(renderer);
+  const forced = qs.get('q');
+  const locked = LEVELS.includes(forced);
+  let idx = LEVELS.indexOf(locked ? forced : (initial || initialLevel(gpu)));
+  if (idx < 0) idx = 1;
+
   const cbs = [];
-  let acc = 0, frames = 0, cooldown = 3, lowCount = 0, highCount = 0;
+  let acc = 0, frames = 0, cooldown = 3, lowCount = 0, highCount = 0, fps = 60, worst = 0;
+  let maxReached = idx; // 一度落ちた品質へ戻る際は慎重に（ピンポン防止）
+  let downgrades = 0;
 
   const apply = () => {
-    const q = levels[idx];
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, prMax[q]));
-    cbs.forEach(cb => cb(q));
+    const q = LEVELS[idx], p = PROFILES[q];
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, p.pixelRatio));
+    if (renderer.shadowMap) renderer.shadowMap.enabled = p.shadows;
+    cbs.forEach(cb => { try { cb(q, p); } catch (e) { console.error('[perf] onChange', e); } });
+    if (dbg) dbg.dataset.q = q;
   };
 
+  // ---- デバッグオーバーレイ ----
+  let dbg = null;
+  if (qs.has('debug')) {
+    dbg = document.createElement('div');
+    dbg.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:9999;font:11px/1.35 ui-monospace,monospace;color:#2b2620;background:rgba(245,240,230,.85);padding:6px 8px;border-radius:4px;pointer-events:none;white-space:pre';
+    document.body.appendChild(dbg);
+  }
+
   return {
-    get quality() { return levels[idx]; },
+    get quality() { return LEVELS[idx]; },
+    get profile() { return PROFILES[LEVELS[idx]]; },
+    get fps() { return fps; },
+    get gpu() { return gpu; },
+    locked,
     onChange(cb) { cbs.push(cb); },
     apply,
+    set(q) { const i = LEVELS.indexOf(q); if (i >= 0 && i !== idx) { idx = i; apply(); } },
     tick(dt) {
-      if (dt > 0.5) return; // タブ復帰時などの外れ値は無視
-      acc += dt; frames++; cooldown -= dt;
+      if (dt > 0.5 || document.hidden) return; // タブ復帰などの外れ値は無視
+      acc += dt; frames++; cooldown -= dt; worst = Math.max(worst, dt);
       if (acc < 1) return;
-      const fps = frames / acc; acc = 0; frames = 0;
-      if (cooldown > 0) return;
-      if (fps < 42) { lowCount++; highCount = 0; } else if (fps > 58) { highCount++; lowCount = 0; } else { lowCount = highCount = 0; }
-      if (lowCount >= 2 && idx > 0) { idx--; lowCount = 0; cooldown = 4; apply(); }
-      else if (highCount >= 6 && idx < 2) { idx++; highCount = 0; cooldown = 6; apply(); }
+      fps = frames / acc;
+      if (dbg) {
+        const i = renderer.info;
+        dbg.textContent = `${fps.toFixed(0)} fps  worst ${(worst * 1000).toFixed(0)}ms  q:${LEVELS[idx]}${locked ? '(locked)' : ''}\n` +
+          `calls ${i.render.calls}  tris ${(i.render.triangles / 1000).toFixed(0)}k  tex ${i.memory.textures}  geo ${i.memory.geometries}\n` +
+          `pr ${renderer.getPixelRatio().toFixed(2)}  ${gpu.slice(0, 48)}`;
+      }
+      acc = 0; frames = 0; worst = 0;
+      if (locked || cooldown > 0) return;
+      if (fps < 40) { lowCount++; highCount = 0; }
+      else if (fps > 57) { highCount++; lowCount = 0; }
+      else { lowCount = Math.max(0, lowCount - 1); highCount = 0; }
+      if (lowCount >= 2 && idx > 0) {
+        idx--; downgrades++; lowCount = 0; cooldown = 4; apply();
+      } else if (idx < 2 && highCount >= (idx + 1 > maxReached ? 8 : 5) + downgrades * 4) {
+        idx++; maxReached = Math.max(maxReached, idx); highCount = 0; cooldown = 6; apply();
+      }
     },
   };
 }
