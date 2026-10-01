@@ -14,3 +14,8 @@
 
 ## [A] 空リポジトリ（No commits yet）で `git fetch` しても何も出ない／ブランチなし
 - 解決: 初回コミットを main に push してから作業ブランチを切る。
+
+## [F] `(cd site && setsid nohup python3 -m http.server ... &)` でもBashツールが120秒ハング
+- 症状: サーバは起動している（curl 200）が、ツール呼び出し自体はタイムアウト扱い(exit 1)。
+- 原因: ツールハーネスが子孫プロセス終了を待つ仕様と推定。setsid/FD切断でも回避不可だった。
+- 解決: **常駐プロセスは Bash ツールの `run_in_background: true` で起動**する。タイムアウトしても実害はないが、1回2分の時間を失う。
