@@ -81,3 +81,31 @@
 ### 提出ルール
 各自、成果を push したら `python3 scripts/roles.py say <ID> ALTUS "review: <stop番号> <URL/パス>"` を送れ。
 私が撮影→赤ペン注釈→このファイルに講評を追記する。**A 評価が出るまでやり直し**。
+
+---
+## R1 — ALTUS 自身の UI 改修案（パッチ提出・A の承認待ち）　2026-10-02 07:55Z
+A の新割当で ui.js / style.css は **A 所有**のため、私の改修は**本体に適用せず** `collab/reviews/patches/altus_ui_r1.patch` として提出（`git apply` 1発で適用可）。
+証拠画像: `img/r1_intro.png`（入館）/ `img/r1_intro_loading.png`（ロード中）/ `img/r1_stop01_pair.jpg`（R0→R1 比較）。
+
+### 改修内容
+1. **入館画面**: ミケランジェロ《アダムの創造》(PD, Wikimedia Commons 3524px 原本から切出し `site/assets/art/ui_adam_hands.jpg`)。
+   指と指の隙間＝「人と AI」を画面中央に置き、館名は上段・入館ボタンは下段で**隙間を空ける**（主役は隙間）。
+   ロード進捗 `--p` でフレスコが灰色・ぼけ → 鮮明に「修復」される。入館時は隙間へ 5.2倍ズーム＋暖白の火花が広がって白に抜ける。
+2. **S1 排他**: 章プレートとキャプションは左下の同じ座を交代で使う（章タイトルとカードの重なり＝F 09:21 / R0 指摘を解消）。
+3. **HUD 上部を1行**（`ROOM I — LATE SUMMER`）。サブタイトル三重表示を廃止。
+4. **キャプション**: 45% → 35vw 以内。見出しは `word-break:auto-phrase` + `text-wrap:balance` + `line-break:strict`（「ユーザ／ー」の行頭長音を解消＝比較画像で確認）。
+   本文フェードアウトを廃止。図版クレジット欄 `#card-art`（`exhibit.userData.art = {title, artist, date, credit}` を表示）。
+5. タイムラインのツールチップを左右端でクランプ（画面外にはみ出していた）。移動中・カード表示中は非表示。
+6. `setStop(i, total, wing, stop?)` が INTERFACES v2 の `stop` オブジェクトを受けられる（`view` 停止点は title/sub を章プレート表示）。旧呼び出しとも互換。
+
+### 自己採点: **B−**（自分にも容赦しない）
+- ✅ 入館画面は S1/S5 合格。ロード中の「修復」演出は意図通り。
+- ❌ 入館画面の下段ヒント行が右下クレジットと接触 → パッチではクレジット/日付を上隅へ移動済（**再撮影未了**）。
+- ❌ キャプションの IMPACT 行が2行に割れる → パッチで1行省略に修正済（**再撮影未了**）。
+- ❌ 3D 側（灰色の箱・プレースホルダ絵画）は未改善のため、画面全体としてはまだ **D**。B/C/D の提出待ち。
+
+### 次の査読予定（受け取り次第）
+- **B**: Met 実名画への全40点置換・GLTF 額・落ち影 → stop 1/8/20 を撮影し S2/S3 で判定。
+- **C**: museum_c_gallery の壁三層構成・室ごとの壁色 → 同上。
+- **D**: ゴボ（矩形）スポット・GTAO・黒の作り方 → ヒストグラムは GLAD（collab/reviews/glad/）と合議。
+- **ABYSS**: post_ultra の ?ultra=0/1 比較を `tools/altus_markup.py pair` で提出せよ。

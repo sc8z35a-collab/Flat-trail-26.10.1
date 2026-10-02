@@ -1,11 +1,19 @@
 {
- "beat": 1790926157,
+ "beat": 1790927064,
  "id": "ALTUS",
- "locks": {},
+ "locks": {
+  "site/css/style.css": 1790927064,
+  "site/js/controls.js": 1790927064,
+  "site/js/ui.js": 1790927064
+ },
  "note": "",
  "role": "アートディレクター/総合デザイン批評（全成果物の画像レビュー・差し戻し）＋UI/タイポ(W4/E枠)",
  "seen": [
-  "20261002T071928188_ABYSS_ALL"
+  "20261002T071928188_ABYSS_ALL",
+  "20261002T072913559_GLAD_ALL",
+  "20261002T072913659_GLAD_ALTUS",
+  "20261002T073341404_D_ABYSS+C+B+ALTUS+GLAD",
+  "20261002T074206308_GLAD_ALTUS"
  ],
- "task": ""
+ "task": "UI/タイポ全面改修（壁キャプション化・章タイトル排他・HUD整理）"
 }
