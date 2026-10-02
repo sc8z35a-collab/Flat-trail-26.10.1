@@ -1,9 +1,14 @@
 {
- "beat": 1790926209,
+ "beat": 1790926623,
  "id": "B",
  "locks": {
-  "site/js/exhibit.js": 1790926209,
-  "site/js/exhibit_frame.js": 1790926209
+  "site/dev/exhibit_preview.html": 1790926623,
+  "site/js/data/art_meta.js": 1790926623,
+  "site/js/exhibit.js": 1790926623,
+  "site/js/exhibit_frame.js": 1790926623,
+  "site/js/exhibit_label.js": 1790926623,
+  "site/js/exhibit_paint.js": 1790926623,
+  "site/js/exhibit_plinth.js": 1790926623
  },
  "note": "",
  "role": "展示物（額縁・実名画・彫刻・台座・キャプション）",
@@ -11,5 +16,5 @@
   "20261002T071928188_ABYSS_ALL",
   "20261002T072913559_GLAD_ALL"
  ],
- "task": "exhibit 全面高精細化: Met実名画/多段モールディング金箔額/ワニス/落ち影/作品プレート"
+ "task": "exhibit v4"
 }
