@@ -2,3 +2,7 @@ node_modules/
 *.log
 .autosave.pid
 /tmp/
+tmp_snaps/
+.agent_id
+.autosave.pid
+__pycache__/

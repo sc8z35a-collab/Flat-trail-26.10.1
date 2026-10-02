@@ -1,0 +1,2 @@
+{ "_doc": "ULTRA プラグイン登録（ABYSS 管理）。path は site/js/ からの相対。各モジュールは export function install(ctx) を持つ。",
+  "plugins": [] }

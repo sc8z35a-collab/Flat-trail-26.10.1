@@ -1,0 +1,52 @@
+diff --git a/site/js/perf.js b/site/js/perf.js
+index 321e464..ed4aac2 100644
+--- a/site/js/perf.js
++++ b/site/js/perf.js
+@@ -10,8 +10,10 @@ export const PROFILES = {
+   low:  { pixelRatio: 1.0,  shadows: false, shadowMap: 512,  bloom: false, dof: false, ssao: false, particles: 0.35, aniso: 2 },
+   mid:  { pixelRatio: 1.35, shadows: true,  shadowMap: 1024, bloom: true,  dof: false, ssao: false, particles: 0.6,  aniso: 4 },
+   high: { pixelRatio: 1.5,  shadows: true,  shadowMap: 1024, bloom: true,  dof: true,  ssao: true,  particles: 1.0,  aniso: 8 },
++  // ULTRA（2026-10-02 ABYSS 追加・ユーザー指示「機種性能無視の超超高グラフィック」）: ネイティブ解像度・4K影・全パス・平面反射・実空間プローブ
++  ultra: { pixelRatio: 3.0, shadows: true, shadowMap: 4096, bloom: true, dof: true, ssao: true, particles: 1.6, aniso: 16, reflections: true, probe: true },
+ };
+-const LEVELS = ['low', 'mid', 'high'];
++const LEVELS = ['low', 'mid', 'high', 'ultra'];
+ 
+ function detectGPU(renderer) {
+   let name = '';
+@@ -28,6 +30,7 @@ function initialLevel(gpu) {
+   const mobile = matchMedia('(pointer:coarse)').matches || /android|iphone|ipad/i.test(navigator.userAgent);
+   const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4;
+   if (/swiftshader|llvmpipe|software|basic render/.test(g)) return 'low';
++  return 'ultra'; // 機種性能無視モード（既定）。重すぎる端末は tick() のみが ultra→high へ1段だけ落とす
+   if (/mali-[gt]?[0-9]{2}\b|adreno \(tm\) [3-5]\d\d|powervr|sgx/.test(g)) return 'low';
+   if (mobile) {
+     // Apple A15+ / Adreno 7xx+ / Mali-G7xx+ / Xclipse は mid から開始し、余裕があれば high に上がる
+@@ -54,7 +57,7 @@ export function createPerf(renderer, { initial } = {}) {
+   const apply = () => {
+     const q = LEVELS[idx], p = PROFILES[q];
+     // リーダー決定(7): スマホは DPR 上限 1.5。デスクトップ high のみ 1.75 まで許可
+-    const cap = (q === 'high' && !matchMedia('(pointer:coarse)').matches) ? 1.75 : p.pixelRatio;
++    const cap = q === 'ultra' ? p.pixelRatio : (q === 'high' && !matchMedia('(pointer:coarse)').matches) ? 1.75 : p.pixelRatio;
+     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
+     if (renderer.shadowMap) renderer.shadowMap.enabled = p.shadows;
+     cbs.forEach(cb => { try { cb(q, p); } catch (e) { console.error('[perf] onChange', e); } });
+@@ -91,12 +94,17 @@ export function createPerf(renderer, { initial } = {}) {
+       }
+       acc = 0; frames = 0; worst = 0;
+       if (locked || cooldown > 0) return;
++      if (LEVELS[idx] === 'ultra') { // ultra は「性能無視」: 致命的(<14fps)が続く時だけ high へ。その下へは自動では落とさない
++        if (fps < 14) lowCount++; else lowCount = 0;
++        if (lowCount >= 4) { idx--; downgrades++; lowCount = 0; cooldown = 6; apply(); }
++        return;
++      }
+       if (fps < 40) { lowCount++; highCount = 0; }
+       else if (fps > 57) { highCount++; lowCount = 0; }
+       else { lowCount = Math.max(0, lowCount - 1); highCount = 0; }
+       if (lowCount >= 2 && idx > 0) {
+         idx--; downgrades++; lowCount = 0; cooldown = 4; apply();
+-      } else if (idx < 2 && highCount >= (idx + 1 > maxReached ? 8 : 5) + downgrades * 4) {
++      } else if (idx < 2 && maxReached < 3 && highCount >= (idx + 1 > maxReached ? 8 : 5) + downgrades * 4) {
+         idx++; maxReached = Math.max(maxReached, idx); highCount = 0; cooldown = 6; apply();
+       }
+     },
