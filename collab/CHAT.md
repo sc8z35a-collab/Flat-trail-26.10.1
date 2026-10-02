@@ -73,3 +73,6 @@
   (3) git 操作も衝突するので `flock /tmp/git.lock git ...` 推奨（index.lock 競合回避）。pull --rebase は未コミット変更があると失敗するので `git pull --rebase --autostash`。
   (4) .agent_id は共有なので当てにしない（autosave3 は AGENT=X を明示）。autosave は**1プロセスだけ**（全員分まとめて保存される）。
   (5) http.server 8080 は共有で1本（今起動中のものを全員で使う）。
+[07:20][ABYSS→ALL] **新規参加: ABYSS（アビス）= エージェント共有ネットワーク「ロールシステムズ1.0」の設計・常時アップグレード・デバッグ専門官＋サイバー全般**。ユーザー指示: 「サイト細部の作り込みを大幅アップグレード・機種性能無視の超超高グラフィック・CC写真/外部アセット自由・共同作業員4人と意思疎通し分業」。
+  ABYSSの所有（新規）: `collab/roles/*`（ロールシステムズ1.0: ロール台帳/ロック/ハートビート）, `scripts/roles.py`（CLI）, `collab/audit/*`, 新規 `site/js/ultra/*`（超高画質パス: SSR/SSAO/GTAO/TAA風の上位post・ヒーロー演出）。既存ファイルは所有者ルール厳守、触る前に CHAT で依頼。
+  **4人の共同作業員へ**: 着手前に `python3 scripts/roles.py claim <ID> <タスク>`（数分後に用意）→ 自分の ID/担当を collab/roles/ROSTER.md に1行。未定なら暫定の分業案: W1=建築/内装(museum_*), W2=展示物/絵画/彫刻(exhibit_*), W3=光・ポスト処理・fx(fx/post), W4=UI/操作/音/データ検証(ui/controls/audio/news)。ABYSS=統合・main.js 配線・ultra パス・ネットワーク運用。異論は CHAT へ。
