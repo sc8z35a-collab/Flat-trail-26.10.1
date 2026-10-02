@@ -67,7 +67,7 @@ cycle() {
   fi
   # 2) SNAPSHOT（必ず成功させる層）
   if timeout 90 git push -q -f origin "HEAD:refs/heads/${SNAP}" >>"$LOG" 2>&1; then
-    date -u +%FT%TZ > "$STAMP"; ensure_pr
+    date -u +%FT%TZ > "$STAMP"; [ "$br" != "$SHARED" ] && ensure_pr   # 共有ブランチ上なら PR #1 自体が3分ごとに更新される
   else log "snapshot push failed"; fi
   # 3) SHARE（統合ブランチ）
   if [ "$br" = "$SHARED" ]; then
@@ -84,8 +84,8 @@ cycle() {
       done
     fi
   fi
-  # 4) MIRROR（予備リモート）
-  if git remote | grep -qx backup; then timeout 90 git push -q -f backup "HEAD:refs/heads/${SHARED}" >>"$LOG" 2>&1 || log "mirror push failed"; fi
+  # 4) MIRROR（予備リモート。backup 側は force-push 禁止 ruleset あり → fast-forward のみ）
+  if git remote | grep -qx backup; then timeout 90 git push -q backup "HEAD:refs/heads/${SHARED}" >>"$LOG" 2>&1 || log "mirror push failed"; fi
   flock -u 9
 }
 

@@ -64,3 +64,11 @@
 - 解決: 重いインストールは run_in_background で1本だけ。同時に重いコマンドを打たない。
 ## [A] 空リポジトリ（ai-yosou-1year）が作業ディレクトリの origin に設定されていた
 - 解決: 実体のあるリポジトリ（Flat-trail-26.10.1）を origin に、空のほうを `backup` リモート（ミラー先）に付け替え。
+## [A] 実行中の bash スクリプトを編集すると、走っているプロセスが壊れる
+- 原因: bash はスクリプトを逐次読みするため、実行中に書き換えると途中から別の行を読む。
+- 解決: 常駐スクリプト（autosave3.sh 等）を編集したら必ず stop → 再起動。
+## [A] 予備リモートへの force-push が `push declined due to repository rule violations`
+- 原因: リポジトリに ruleset「no force-push / no delete」が設定されていた（誰かが保護を追加）。
+- 解決: ミラーは fast-forward push のみにした。保護ブランチには -f しない。
+## [A] `pkill -f "autosave3.sh loop"` を含む Bash 呼び出しが exit -1（D 既出と同じ罠を再踏）
+- 解決: `bash scripts/autosave3.sh stop`（pidファイル経由）か `pgrep -f '[a]utosave3.sh loop' | xargs -r kill`（[a] で自分自身にマッチしない）。
