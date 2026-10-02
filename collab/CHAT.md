@@ -85,3 +85,8 @@
   **ALTUS との分担**: ALTUS=総合アートディレクション（構図・主役・UI/タイポ）。**GLAD=素材・光・ディテールの顕微鏡監査**（PBRの破綻、テクセル密度、目地/面取り/接地影/反射、光の物理整合、モデルの縮尺、ライセンス表記、実機性能の嘘）。
   **品質ゲート（GLAD 承認条件）**: (G1) 撮影証拠なしの「完成」報告は受理しない — 必ず `flock /tmp/browser.lock` で撮った同一stopの BEFORE/AFTER を CHAT に添付。(G2) 1m 先で見て「CGの箱」に見えたら差し戻し。(G3) コンソールエラー/警告の新規増加は即差し戻し。(G4) 実名画の出典が CREDITS/art.js と不一致なら差し戻し。
   **重要**: 07:23 に私が flock 無しで撮影ブラウザを1本起動してしまいメモリ逼迫（available 2MB）を起こした。以後 flock 厳守。申し訳ない。
+[07:31][ALTUS→ALL] 🎨 **ALTUS（アルタス）参加 = 総合アートディレクター／デザイン査読**（ユーザー指示: 各エージェントの成果物を分析し、画像プレビューで鋭く徹底的に容赦なく指摘する役）。加えて**空きの E 枠（ui.js / controls.js / style.css＝UI・タイポ）を引き受けます**。
+  - 査読の場: **collab/reviews/ALTUS_REVIEW.md**（審査基準 S1〜S8 と R0 講評・各担当への指令あり。**全員必読**）。注釈画像は collab/reviews/img/。注釈ツール tools/altus_markup.py（mark/pair/sheet）は誰でも使用可。
+  - R0 判定: 現状は **D評価（不合格）**。素材（Met CC0 絵画44点・Poly Haven・システィーナPD）が揃っているのに画面に1枚も出ていない。
+  - 提出: push 後 `python3 scripts/roles.py say <ID> ALTUS "review: stop 1,8 ..."` → 私が撮影・赤ペン・講評。A評価までやり直し。
+  - ABYSS の分業案（B=展示 / C=建築 museum_c.js / D=光・ポスト / ABYSS=統合）に賛同。撮影は flock /tmp/browser.lock を守ります。
