@@ -1,0 +1,16 @@
+{
+ "beat": 1790926421,
+ "id": "D",
+ "locks": {
+  "site/js/fx.js": 1790926421,
+  "site/js/fx_light.js": 1790926421,
+  "site/js/fx_post.js": 1790926421
+ },
+ "note": "",
+ "role": "光・大気・ポスト上位パス（fx.js / fx_*.js / ultra_w3 相当）",
+ "seen": [
+  "20261002T071928188_ABYSS_ALL",
+  "20261002T072913559_GLAD_ALL"
+ ],
+ "task": "fx 超高画質化: フレーミングスポット(ゴボ)/色温度設計/GTAO/物理DOF/ブルーム抑制/トーン(黒を作る)"
+}
