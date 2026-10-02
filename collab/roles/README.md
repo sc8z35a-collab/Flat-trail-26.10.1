@@ -12,7 +12,7 @@ python3 scripts/roles.py join  W1 "建築/内装"                   # 初回の�
 python3 scripts/roles.py claim W1 "大理石床の象嵌" site/js/ultra_w1/floor.js   # 着手＋ロック
 python3 scripts/roles.py say   W1 ABYSS "floor.js の export 名は makeFloor(scene)"
 python3 scripts/roles.py inbox W1                                # 自分宛の未読
-python3 scripts/roles.py sync  W1 "feat(W1): inlay floor"         # commit→rebase(自動解決)→push
+python3 scripts/roles.py sync  W1 "feat(W1): inlay floor" site/js/ultra_w1/floor.js  # 指定ファイルだけcommit→rebase→push
 python3 scripts/roles.py board                                   # 全員の状況
 ```
 - ロック TTL 45分。`beat` / `sync` で自動延長。期限切れは無効（落ちたエージェントのロックで詰まらない）。
@@ -35,3 +35,10 @@ export function install(ctx) -> { update?(t, dt, ctx), onArrive?(stopIndex, stop
 // ctx = { THREE, scene, renderer, camera, museum, NEWS, WINGS, ART, post, fx, quality, ultra:true|false, assets:'assets/' }
 ```
 `?ultra=0` で全拡張をオフ（比較・不具合切り分け用）。`?only=w1,w3` で一部のみ。
+
+## ⚠ 共有作業ツリー（2026-10-02 判明）
+4人+ABYSS は **同一sandbox・同一 /home/user/webapp** を共有。よって:
+- `git add -A` / `commit -a` 禁止。`roles.py sync <ID> "msg" <paths...>` は指定パスのみ commit、git は `/tmp/git.lock` で直列化。
+- ブラウザは同時1本: `flock /tmp/browser.lock python3 scripts/shot.py ...`
+- remote: **origin = Flat-trail-26.10.1（正）**, `backup` = ai-yosou-1year（autosave3 が force-push するミラー。backup に直接 push しないこと＝上書きされる）。
+- インシデント記録: collab/audit/INCIDENTS.md

@@ -14,7 +14,7 @@
   python3 scripts/roles.py who   <file>                    そのファイルの所有者/ロック保持者
   python3 scripts/roles.py board                           ダッシュボード生成 + 表示
   python3 scripts/roles.py check                           ステージ済み変更がロック/所有権に違反しないか検査（push前）
-  python3 scripts/roles.py sync  <ID> ["commit msg"]       add→commit→pull --rebase(自動解決)→push を1発で
+  python3 scripts/roles.py sync  <ID> "msg" [paths...]     指定pathsだけcommit→pull --rebase(自動解決)→push（add -A しない・git は flock 直列化）
 ロックは TTL 45分（ハートビートで延長）。期限切れロックは自動的に無効。
 """
 import json, os, sys, time, subprocess, glob, re, fnmatch, datetime as dt
@@ -135,13 +135,21 @@ def cmd_check(i=None):
             src = open(os.path.join(ROOT, f), encoding='utf-8', errors='ignore').read()
             if '<<<<<<<' in src or '>>>>>>>' in src: print(f'🔴 {f} に衝突マーカー'); bad += 1
     print('check:', 'NG' if bad else 'OK'); return bad
-def cmd_sync(i, msg=''):
+def _locked_git(*a):
+    """共有作業ツリー対策: 全 git 操作を /tmp/git.lock で直列化（B提案ルール3）"""
+    return sh('flock', '-w', '120', '/tmp/git.lock', 'git', *a)
+def cmd_sync(i, msg='', *paths):
+    """共有作業ツリー対策: **git add -A しない**。自分の state/msg + 指定 paths だけを commit。"""
     cmd_beat(i); cmd_board()
-    sh('git', 'add', '-A')
-    if sh('git', 'diff', '--cached', '--quiet').returncode:
-        sh('git', 'commit', '-q', '--no-verify', '-m', msg or f'sync({i}): {iso()}')
+    mine = [os.path.relpath(sp(i), ROOT), 'collab/roles/DASHBOARD.md']
+    mine += [os.path.relpath(p, ROOT) for p in glob.glob(os.path.join(MD, f'*_{i}_*.md'))]
+    mine += [norm(p) for p in paths]
+    mine = [p for p in mine if os.path.exists(os.path.join(ROOT, p)) or sh('git', 'ls-files', '--error-unmatch', p).returncode == 0]
+    _locked_git('add', '--', *mine)
+    if _locked_git('diff', '--cached', '--quiet', '--', *mine).returncode:
+        _locked_git('commit', '-q', '--no-verify', '-m', msg or f'sync({i}): {iso()}', '--', *mine)
     for t in range(4):
-        r = sh('git', 'pull', '-q', '--rebase', '--autostash', 'origin', 'genspark_ai_developer')
+        _locked_git('pull', '-q', '--rebase', '--autostash', 'origin', 'genspark_ai_developer')
         guard = 0
         while (os.path.isdir(os.path.join(ROOT, '.git/rebase-merge')) or os.path.isdir(os.path.join(ROOT, '.git/rebase-apply'))) and guard < 40:
             guard += 1
@@ -152,7 +160,7 @@ def cmd_sync(i, msg=''):
                 else: sh('git', 'checkout', '--ours', '--', f)   # rebase中 ours=リモート → リモート優先
                 sh('git', 'add', f)
             os.environ['GIT_EDITOR'] = 'true'; sh('git', 'rebase', '--continue')
-        if sh('git', 'push', '-q', 'origin', 'HEAD:genspark_ai_developer').returncode == 0:
+        if _locked_git('push', '-q', 'origin', 'HEAD:genspark_ai_developer').returncode == 0:
             print('✓ synced', sh('git', 'log', '-1', '--format=%h %s').stdout.strip()); return
         time.sleep(3 + t * 4)
     print('✗ push failed (4x)'); sys.exit(1)
