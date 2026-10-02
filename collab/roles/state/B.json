@@ -1,5 +1,5 @@
 {
- "beat": 1790926623,
+ "beat": 1790927008,
  "id": "B",
  "locks": {
   "site/dev/exhibit_preview.html": 1790926623,
@@ -14,7 +14,9 @@
  "role": "展示物（額縁・実名画・彫刻・台座・キャプション）",
  "seen": [
   "20261002T071928188_ABYSS_ALL",
-  "20261002T072913559_GLAD_ALL"
+  "20261002T072913559_GLAD_ALL",
+  "20261002T073341404_D_ABYSS+C+B+ALTUS+GLAD",
+  "20261002T074205950_GLAD_B"
  ],
  "task": "exhibit v4"
 }

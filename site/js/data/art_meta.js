@@ -1,409 +1,544 @@
-// data/art_meta.js — Owner: B。Met Collection API から取得した実寸・技法・クレジット（全件 isPublicDomain=true を確認済 2026-10-02）。
-// hcm/wcm = 作品の実寸（cm, 高さ×幅）。展示サイズの決定・壁キャプションに使用。
+// data/art_meta.js — Owner: B。Met Collection API から取得（全件 isPublicDomain=true を 2026-10-02 に確認）。
+// hcm/wcm = 作品実寸(cm, 高さ×幅), year = objectBeginDate。展示サイズ・額の様式・壁ラベルに使用。
 export const ART_META = {
 "0": {
 "hcm": 185.4,
 "wcm": 139.4,
+"year": 1752,
 "medium": "Oil on canvas",
+"bio": "Italian, Venice 1696–1770 Madrid",
+"nat": "Italian",
+"culture": "",
 "credit": "Gift of Mr. and Mrs. Charles Wrightsman, 1977",
 "acc": "1977.1.3",
-"nat": "Italian",
-"culture": ""
+"dims": "73 x 54 7/8 in. (185.4 x 139.4 cm)"
 },
 "1": {
 "hcm": 45.7,
 "wcm": 40.6,
+"year": 1657,
 "medium": "Oil on canvas",
+"bio": "Dutch, Delft 1632–1675 Delft",
+"nat": "Dutch",
+"culture": "",
 "credit": "Marquand Collection, Gift of Henry G. Marquand, 1889",
 "acc": "89.15.21",
-"nat": "Dutch",
-"culture": ""
+"dims": "18 x 16 in. (45.7 x 40.6 cm)"
 },
 "2": {
 "hcm": 121.9,
 "wcm": 149.9,
+"year": 1704,
 "medium": "Oil on canvas",
+"bio": "British, London 1681–1749 London",
+"nat": "British",
+"culture": "",
 "credit": "Gift of William P. Clyde, 1960",
 "acc": "60.94.2",
-"nat": "British",
-"culture": ""
+"dims": "48 x 59 in. (121.9 x 149.9 cm)"
 },
 "3": {
 "hcm": 90.2,
 "wcm": 72.7,
+"year": 1760,
 "medium": "Oil on canvas",
+"bio": "Italian, Venice 1696–1770 Madrid",
+"nat": "Italian",
+"culture": "",
 "credit": "Bequest of Lore Heinemann, in memory of her husband, Dr. Rudolf J. Heinemann, 1996",
 "acc": "1997.117.7",
-"nat": "Italian",
-"culture": ""
+"dims": "35 1/2 x 28 5/8 in. (90.2 x 72.7 cm)"
 },
 "4": {
 "hcm": 74.3,
 "wcm": 107.0,
+"year": 1773,
 "medium": "Oil on canvas",
+"bio": "French, Lille 1750–1826 Lille",
+"nat": "French",
+"culture": "",
 "credit": "Gift of Mrs. Vincent Astor, 1978",
 "acc": "1978.493",
-"nat": "French",
-"culture": ""
+"dims": "29 1/4 x 42 1/8 in. (74.3 x 107 cm)"
 },
 "5": {
 "hcm": 66.0,
 "wcm": 81.3,
+"year": 1905,
 "medium": "Oil on canvas",
+"bio": "French, Bordeaux 1840–1916 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Anonymous Gift, 1927",
 "acc": "27.29",
-"nat": "French",
-"culture": ""
+"dims": "26 x 32 in. (66 x 81.3 cm)"
 },
 "6": {
 "hcm": 259.7,
 "wcm": 194.6,
+"year": 1788,
 "medium": "Oil on canvas",
+"bio": "French, Paris 1748–1825 Brussels",
+"nat": "French",
+"culture": "",
 "credit": "Purchase, Mr. and Mrs. Charles Wrightsman Gift, in honor of Everett Fahy, 1977",
 "acc": "1977.10",
-"nat": "French",
-"culture": ""
+"dims": "102 1/4 x 76 5/8 in. (259.7 x 194.6 cm)"
 },
 "7": {
 "hcm": 32.1,
 "wcm": 41.9,
+"year": 1755,
 "medium": "Oil on wood",
+"bio": "Flemish, 1735–1805",
+"nat": "Flemish",
+"culture": "",
 "credit": "Purchase, 1871",
 "acc": "71.93",
-"nat": "Flemish",
-"culture": ""
+"dims": "12 5/8 x 16 1/2 in. (32.1 x 41.9 cm)"
 },
 "8": {
 "hcm": 128.6,
 "wcm": 174.9,
+"year": 1568,
 "medium": "Oil on Baltic oak",
+"bio": "Netherlandish, Antwerp 1533–1575 Antwerp",
+"nat": "Netherlandish",
+"culture": "",
 "credit": "Purchase, Lila Acheson Wallace Gift and Bequest of George Blumenthal, by exchange, 2015",
 "acc": "2015.146",
-"nat": "Netherlandish",
-"culture": ""
+"dims": "50 5/8 × 68 7/8 in. (128.6 × 174.9 cm)"
 },
 "9": {
 "hcm": 176.5,
 "wcm": 192.7,
+"year": 1537,
 "medium": "Oil on wood",
+"bio": "Netherlandish or French, active mid-16th century",
+"nat": "Netherlandish, French",
+"culture": "",
 "credit": "Wentworth Fund, 1950",
 "acc": "50.70",
-"nat": "Netherlandish, French",
-"culture": ""
+"dims": "69 1/2 x 75 7/8 in. (176.5 x 192.7 cm)"
 },
 "10": {
 "hcm": 143.5,
 "wcm": 136.5,
+"year": 1653,
 "medium": "Oil on canvas",
+"bio": "Dutch, Leiden 1606–1669 Amsterdam",
+"nat": "Dutch",
+"culture": "",
 "credit": "Purchase, special contributions and funds given or bequeathed by friends of the Museum, 1961",
 "acc": "61.198",
-"nat": "Dutch",
-"culture": ""
+"dims": "56 1/2 x 53 3/4 in. (143.5 x 136.5 cm)"
 },
 "11": {
 "hcm": 92.1,
 "wcm": 118.4,
+"year": 1597,
 "medium": "Oil on canvas",
+"bio": "Italian, Milan or Caravaggio 1571–1610 Porto Ercole",
+"nat": "Italian",
+"culture": "",
 "credit": "Rogers Fund, 1952",
 "acc": "52.81",
-"nat": "Italian",
-"culture": ""
+"dims": "36 1/4 x 46 5/8 in. (92.1 x 118.4 cm)"
 },
 "12": {
 "hcm": 71.8,
 "wcm": 55.9,
+"year": 1769,
 "medium": "Oil on canvas",
+"bio": "French, Grasse 1732–1806 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Gift of Julia A. Berwind, 1953",
 "acc": "53.61.5",
-"nat": "French",
-"culture": ""
+"dims": "28 1/4 x 22 in. (71.8 x 55.9 cm)"
 },
 "13": {
 "hcm": 119.1,
 "wcm": 182.9,
+"year": 1658,
 "medium": "Oil on canvas",
+"bio": "French, Les Andelys 1594–1665 Rome",
+"nat": "French",
+"culture": "",
 "credit": "Fletcher Fund, 1924",
 "acc": "24.45.1",
-"nat": "French",
-"culture": ""
+"dims": "46 7/8 x 72 in. (119.1 x 182.9 cm)"
 },
 "14": {
 "hcm": 69.9,
 "wcm": 92.4,
+"year": 1655,
 "medium": "Oil on wood",
+"bio": "Dutch, Amsterdam 1626–1679 Amsterdam",
+"nat": "Dutch",
+"culture": "",
 "credit": "Francis L. Leland Fund, 1912",
 "acc": "12.31",
-"nat": "Dutch",
-"culture": ""
+"dims": "27 1/2 x 36 3/8 in. (69.9 x 92.4 cm)"
 },
 "15": {
 "hcm": 206.4,
 "wcm": 104.8,
+"year": 1864,
 "medium": "Oil on canvas",
+"bio": "French, Paris 1826–1898 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Bequest of William H. Herriman, 1920",
 "acc": "21.134.1",
-"nat": "French",
-"culture": ""
+"dims": "81 1/4 × 41 1/4 in. (206.4 × 104.8 cm)"
 },
 "16": {
 "hcm": 56.5,
 "wcm": 79.4,
+"year": 1715,
 "medium": "Opaque watercolor, ink and gold on paper",
+"bio": "Indian, active ca. 1725–60",
+"nat": "Indian",
+"culture": "India, Guler, Himachal Pradesh",
 "credit": "Rogers Fund, 1919",
 "acc": "19.24.1",
-"nat": "Indian",
-"culture": "India, Guler, Himachal Pradesh"
+"dims": "Image: 22 1/4 × 31 1/4 in. (56.5 × 79.4 cm)"
 },
 "17": {
 "hcm": 211.6,
 "wcm": 127.8,
+"year": 1873,
 "medium": "Oil on canvas",
+"bio": "French, Bédarieux 1837–1883 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Gift of Steven and Alexandra Cohen, 2012",
 "acc": "2012.575",
-"nat": "French",
-"culture": ""
+"dims": "83 5/16 × 50 5/16 in. (211.6 × 127.8 cm)"
 },
 "18": {
 "hcm": 29.2,
 "wcm": 19.4,
+"year": 1615,
 "medium": "Oil on wood",
+"bio": "Dutch, Antwerp 1573–1621 The Hague",
+"nat": "Dutch",
+"culture": "",
 "credit": "Purchase, many members of the Board of Trustees Gifts, in honor of Sharon H. Cott, Lila Acheson Wallace Gift, and Rogers Fund, 2025",
 "acc": "2025.93",
-"nat": "Dutch",
-"culture": ""
+"dims": "11 1/2 × 7 5/8 in. (29.2 × 19.4 cm)"
 },
 "19": {
 "hcm": 147.3,
 "wcm": 114.3,
+"year": 1860,
 "medium": "Oil on canvas",
+"bio": "French, Paris 1832–1883 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Gift of William Church Osborn, 1949",
 "acc": "49.58.2",
-"nat": "French",
-"culture": ""
+"dims": "58 x 45 in. (147.3 x 114.3 cm)"
 },
 "20": {
 "hcm": 50.8,
 "wcm": 61.0,
+"year": 1853,
 "medium": "Oil on canvas",
+"bio": "French, Charenton-Saint-Maurice 1798–1863 Paris",
+"nat": "French",
+"culture": "",
 "credit": "H. O. Havemeyer Collection, Bequest of Mrs. H. O. Havemeyer, 1929",
 "acc": "29.100.131",
-"nat": "French",
-"culture": ""
+"dims": "20 x 24 in. (50.8 x 61 cm)"
 },
 "21": {
 "hcm": 73.0,
 "wcm": 92.4,
+"year": 1885,
 "medium": "Oil on canvas",
+"bio": "French, Aix-en-Provence 1839–1906 Aix-en-Provence",
+"nat": "French",
+"culture": "",
 "credit": "Bequest of Sam A. Lewisohn, 1951",
 "acc": "51.112.1",
-"nat": "French",
-"culture": ""
+"dims": "28 3/4 x 36 3/8 in. (73 x 92.4 cm)"
 },
 "22": {
 "hcm": 88.9,
 "wcm": 68.6,
+"year": 1885,
 "medium": "Oil on canvas",
+"bio": "French, Vesoul 1824–1904 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Gift of Louis C. Raegner, 1927",
 "acc": "27.200",
-"nat": "French",
-"culture": ""
+"dims": "35 x 27 in. (88.9 x 68.6 cm)"
 },
 "23": {
 "hcm": 48.9,
 "wcm": 39.1,
+"year": 1660,
 "medium": "Oil on wood",
+"bio": "Dutch, Leiden 1613–1675 Leiden",
+"nat": "Dutch",
+"culture": "",
 "credit": "Bequest of Benjamin Altman, 1913",
 "acc": "14.40.607",
-"nat": "Dutch",
-"culture": ""
+"dims": "19 1/4 x 15 3/8 in. (48.9 x 39.1 cm)"
 },
 "24": {
 "hcm": 121.3,
 "wcm": 108.6,
+"year": 1599,
 "medium": "Oil on canvas",
+"bio": "Greek, Iráklion (Candia) 1541–1614 Toledo",
+"nat": "Greek",
+"culture": "",
 "credit": "H. O. Havemeyer Collection, Bequest of Mrs. H. O. Havemeyer, 1929",
 "acc": "29.100.6",
-"nat": "Greek",
-"culture": ""
+"dims": "47 3/4 x 42 3/4 in. (121.3 x 108.6 cm)"
 },
 "25": {
 "hcm": 105.1,
 "wcm": 152.1,
+"year": 1643,
 "medium": "Oil on canvas",
+"bio": "French, Chamagne 1604/5?–1682 Rome",
+"nat": "French",
+"culture": "",
 "credit": "Fletcher Fund, 1955",
 "acc": "55.119",
-"nat": "French",
-"culture": ""
+"dims": "41 3/8 x 59 7/8 in. (105.1 x 152.1 cm)"
 },
 "26": {
 "hcm": 250.2,
 "wcm": 219.7,
+"year": 1818,
 "medium": "Oil on canvas",
+"bio": "French, Rouen 1791–1824 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Purchase, Gift of James A. Moffett 2nd, in memory of George M. Moffett, by exchange, 1989",
 "acc": "1989.183",
-"nat": "French",
-"culture": ""
+"dims": "98 1/2 x 86 1/2 in. (250.2 x 219.7 cm)"
 },
 "27": {
 "hcm": 558.8,
 "wcm": 326.7,
+"year": 1729,
 "medium": "Oil on canvas",
+"bio": "Italian, Venice 1696–1770 Madrid",
+"nat": "Italian",
+"culture": "",
 "credit": "Rogers Fund, 1965",
 "acc": "65.183.1",
-"nat": "Italian",
-"culture": ""
+"dims": "Irregular painted surface, 220 x 128 5/8 in. (558.8 x 326.7 cm)"
 },
 "28": {
 "hcm": 95.9,
 "wcm": 154.0,
+"year": 1846,
 "medium": "Oil on canvas",
+"bio": "Norwegian, Bergen 1788–1857 Dresden",
+"nat": "Norwegian",
+"culture": "",
 "credit": "Gift of Christen Sveaas, in celebration of the Museum's 150th Anniversary, 2019",
 "acc": "2019.167.2",
-"nat": "Norwegian",
-"culture": ""
+"dims": "37 3/4 x 60 5/8 in. (95.9 x 154 cm)"
 },
 "29": {
 "hcm": 97.2,
 "wcm": 198.1,
+"year": 1577,
 "medium": "Oil on canvas",
+"bio": "Italian, Venice 1518/19–1594 Venice",
+"nat": "Italian",
+"culture": "",
 "credit": "John Stewart Kennedy Fund, 1910",
 "acc": "10.206",
-"nat": "Italian",
-"culture": ""
+"dims": "38 1/4 x 78 in. (97.2 x 198.1 cm)"
 },
 "30": {
 "hcm": 45.8,
 "wcm": 55.5,
+"year": 1780,
 "medium": "Oil on canvas",
+"bio": "French, Paris 1741–1828 Epinay-sur-Seine",
+"nat": "French",
+"culture": "",
 "credit": "Purchase, Friends of European Paintings Gifts, 2022",
 "acc": "2022.264",
-"nat": "French",
-"culture": ""
+"dims": "18 1/16 × 21 7/8 in. (45.8 × 55.5 cm)"
 },
 "31": {
 "hcm": 36.3,
 "wcm": 25.2,
+"year": 1575,
 "medium": "Oil on oak panel",
+"bio": "German, Kronach 1472–1553 Weimar",
+"nat": "German",
+"culture": "",
 "credit": "Robert Lehman Collection, 1975",
 "acc": "1975.1.135",
-"nat": "German",
-"culture": ""
+"dims": "14 5/16 x 9 15/16 in. (36.3 x 25.2 cm)"
 },
 "32": {
 "hcm": 38.1,
 "wcm": 35.6,
+"year": 1823,
 "medium": "Oil on canvas",
+"bio": "Norwegian, Bergen 1788–1857 Dresden",
+"nat": "Norwegian",
+"culture": "",
 "credit": "Gift of Christen Sveaas, in celebration of the Museum's 150th Anniversary, 2019",
 "acc": "2019.167.3",
-"nat": "Norwegian",
-"culture": ""
+"dims": "15 x 14 in. (38.1 x 35.6 cm)"
 },
 "33": {
 "hcm": 146.5,
 "wcm": 165.4,
+"year": 1694,
 "medium": "Two-panel folding screen; ink, color, and gold leaf on paper",
+"bio": "Japanese, 1658–1716",
+"nat": "Japanese",
+"culture": "Japan",
 "credit": "Fletcher Fund, 1926",
 "acc": "26.117",
-"nat": "Japanese",
-"culture": "Japan"
+"dims": "Image: 57 11/16 × 65 1/8 in. (146.5 × 165.4 cm)"
 },
 "34": {
 "hcm": 143.5,
 "wcm": 62.2,
+"year": 1909,
 "medium": "Oil on canvas",
+"bio": "French, Bordeaux 1840–1916 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Bequest of Alexander M. Bing, 1959",
 "acc": "60.19.1",
-"nat": "French",
-"culture": ""
+"dims": "56 1/2 x 24 1/2 in. (143.5 x 62.2 cm)"
 },
 "35": {
 "hcm": 182.9,
 "wcm": 118.1,
+"year": 1623,
 "medium": "Oil on canvas",
+"bio": "Flemish, 1584–1669",
+"nat": "Flemish",
+"culture": "",
 "credit": "Bequest of Helen Hay Whitney, 1944",
 "acc": "45.128.14",
-"nat": "Flemish",
-"culture": ""
+"dims": "72 x 46 1/2 in. (182.9 x 118.1 cm)"
 },
 "36": {
 "hcm": 114.3,
 "wcm": 88.9,
+"year": 1670,
 "medium": "Oil on canvas",
+"bio": "Dutch, Delft 1632–1675 Delft",
+"nat": "Dutch",
+"culture": "",
 "credit": "The Friedsam Collection, Bequest of Michael Friedsam, 1931",
 "acc": "32.100.18",
-"nat": "Dutch",
-"culture": ""
+"dims": "45 x 35 in. (114.3 x 88.9 cm)"
 },
 "37": {
 "hcm": 71.4,
 "wcm": 127.6,
+"year": 1868,
 "medium": "Oil on canvas",
+"bio": "French, Courrières 1827–1906 Paris",
+"nat": "French",
+"culture": "",
 "credit": "Bequest of Collis P. Huntington, 1900",
 "acc": "25.110.66",
-"nat": "French",
-"culture": ""
+"dims": "28 1/8 x 50 1/4 in. (71.4 x 127.6 cm)"
 },
 "38": {
 "hcm": 61.3,
 "wcm": 152.7,
+"year": 1460,
 "medium": "Tempera on wood, gilt ornaments",
+"bio": "Italian, Florence 1441/42–1493 Florence",
+"nat": "Italian",
+"culture": "",
 "credit": "Gift of J. Pierpont Morgan, 1909",
 "acc": "09.136.2",
-"nat": "Italian",
-"culture": ""
+"dims": "Overall 24 1/8 x 60 1/8 in. (61.3 x 152.7 cm); painted surface 19 5/8 x 56 in. (49.8 x 142.2 cm)"
 },
 "39": {
 "hcm": 119.0,
 "wcm": 162.0,
+"year": 1565,
 "medium": "Oil on oak",
+"bio": "Netherlandish, Breda (?) ca. 1525–1569 Brussels",
+"nat": "Netherlandish",
+"culture": "",
 "credit": "Rogers Fund, 1919",
 "acc": "19.164",
-"nat": "Netherlandish",
-"culture": ""
+"dims": "Overall, including added strips at top, bottom, and right, 46 7/8 x 63 3/4 in. (119 x 162 cm); original painted surface 45 7/8 x 62 7/8 in. (116.5 x 159.5 cm)"
 },
 "hall1": {
 "hcm": 130.8,
 "wcm": 193.0,
+"year": 1836,
 "medium": "Oil on canvas",
+"bio": "American, Lancashire 1801–1848 Catskill, New York",
+"nat": "American",
+"culture": "American",
 "credit": "Gift of Mrs. Russell Sage, 1908",
 "acc": "08.228",
-"nat": "American",
-"culture": "American"
+"dims": "51 1/2 x 76 in. (130.8 x 193 cm)"
 },
 "hall3": {
 "hcm": 186.7,
 "wcm": 306.7,
+"year": 1863,
 "medium": "Oil on canvas",
+"bio": "American, Solingen 1830–1902 New York",
+"nat": "American",
+"culture": "American",
 "credit": "Rogers Fund, 1907",
 "acc": "07.123",
-"nat": "American",
-"culture": "American"
+"dims": "73 1/2 x 120 3/4 in. (186.7 x 306.7 cm)"
 },
 "hall4": {
 "hcm": 91.8,
 "wcm": 122.6,
+"year": 1840,
 "medium": "Oil on canvas",
+"bio": "British, London 1775–1851 London",
+"nat": "British",
+"culture": "",
 "credit": "Catharine Lorillard Wolfe Collection, Wolfe Fund, 1896",
 "acc": "96.29",
-"nat": "British",
-"culture": ""
+"dims": "36 1/8 x 48 1/4 in. (91.8 x 122.6 cm)"
 },
 "hall5": {
 "hcm": 129.5,
 "wcm": 196.2,
+"year": 1787,
 "medium": "Oil on canvas",
+"bio": "French, Paris 1748–1825 Brussels",
+"nat": "French",
+"culture": "",
 "credit": "Catharine Lorillard Wolfe Collection, Wolfe Fund, 1931",
 "acc": "31.45",
-"nat": "French",
-"culture": ""
+"dims": "51 x 77 1/4 in. (129.5 x 196.2 cm)"
 },
 "hall6": {
 "hcm": 73.2,
 "wcm": 93.4,
+"year": 1889,
 "medium": "Oil on canvas",
+"bio": "Dutch, Zundert 1853–1890 Auvers-sur-Oise",
+"nat": "Dutch",
+"culture": "",
 "credit": "Purchase, The Annenberg Foundation Gift, 1993",
 "acc": "1993.132",
-"nat": "Dutch",
-"culture": ""
+"dims": "28 13/16 × 36 3/4 in. (73.2 × 93.4 cm)"
 }
 };
