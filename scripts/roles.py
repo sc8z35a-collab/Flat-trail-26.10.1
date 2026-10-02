@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""roles.py — ロールシステムズ1.0 (Role Systems 1.0)  Owner: ABYSS
+"""roles.py — ロールシステムズ1.1 (Role Systems)  Owner: ABYSS
 エージェント共有ネットワークの CLI。**衝突し得ない設計**: 各エージェントは自分専用のファイルにしか書かない。
   collab/roles/state/<ID>.json   … 自分の状態（役割・現在タスク・ファイルロック・ハートビート）
   collab/roles/msg/<UTC>_<FROM>_<TO>.md … 1メッセージ=1ファイル（追記衝突ゼロ）。TO=ALL で全員宛
@@ -13,6 +13,7 @@
   python3 scripts/roles.py inbox <ID> [--all]              自分宛の未読（--all で既読も）。読むと既読化
   python3 scripts/roles.py who   <file>                    そのファイルの所有者/ロック保持者
   python3 scripts/roles.py board                           ダッシュボード生成 + 表示
+  python3 scripts/roles.py doctor                          ネットワーク健全性診断（remote取り違え/force-push消失/衝突マーカー/死にロック/メモリ/ブラウザ多重）
   python3 scripts/roles.py check                           ステージ済み変更がロック/所有権に違反しないか検査（push前）
   python3 scripts/roles.py sync  <ID> "msg" [paths...]     指定pathsだけcommit→pull --rebase(自動解決)→push（add -A しない・git は flock 直列化）
 ロックは TTL 45分（ハートビートで延長）。期限切れロックは自動的に無効。
@@ -36,8 +37,8 @@ OWNERS = [
 APPEND_ONLY = ['collab/CHAT.md', 'collab/TROUBLESHOOTING.md', 'collab/BOARD.md', 'collab/agents/*', 'collab/roles/msg/*']
 
 def now(): return int(time.time())
-def iso(t=None): return dt.datetime.utcfromtimestamp(t or now()).strftime('%Y-%m-%dT%H:%M:%SZ')
-def hm(t): return dt.datetime.utcfromtimestamp(t).strftime('%m-%d %H:%M')
+def iso(t=None): return dt.datetime.fromtimestamp(t or now(), dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+def hm(t): return dt.datetime.fromtimestamp(t, dt.timezone.utc).strftime('%m-%d %H:%M')
 def sh(*a, check=False):
     r = subprocess.run(a, cwd=ROOT, capture_output=True, text=True)
     if check and r.returncode: print(r.stdout + r.stderr); sys.exit(r.returncode)
@@ -86,7 +87,7 @@ def cmd_beat(i, note=''):
     save(s); print('♥', i, iso())
 def cmd_say(fr, to, *body):
     ensure(); text = ' '.join(body).strip()
-    fn = os.path.join(MD, f'{dt.datetime.utcnow().strftime("%Y%m%dT%H%M%S%f")[:-3]}_{fr}_{to.replace(",", "+")}.md')
+    fn = os.path.join(MD, f'{dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%f")[:-3]}_{fr}_{to.replace(",", "+")}.md')
     open(fn, 'w').write(f'from: {fr}\nto: {to}\nat: {iso()}\n\n{text}\n'); print('sent →', os.path.relpath(fn, ROOT))
 def msgs():
     out = []
@@ -165,9 +166,48 @@ def cmd_sync(i, msg='', *paths):
         time.sleep(3 + t * 4)
     print('✗ push failed (4x)'); sys.exit(1)
 
+def cmd_doctor(*_):
+    """ネットワーク健全性診断（ABYSS の常時監視用）。問題は collab/audit/HEALTH.md に出す"""
+    R = []
+    def add(lv, msg): R.append((lv, msg)); print(lv, msg)
+    url = sh('git', 'remote', 'get-url', 'origin').stdout.strip()
+    if 'Flat-trail-26.10.1' not in url: add('🔴', f'origin が正ではない: {url}（INC-001 再発の恐れ）')
+    else: add('🟢', 'origin = Flat-trail-26.10.1')
+    sh('flock', '-w', '60', '/tmp/git.lock', 'git', 'fetch', '-q', 'origin')
+    # force-push 検知: reflog に forced-update が出たら、消えたコミットを列挙
+    rl = sh('git', 'reflog', 'show', '--format=%H %gs', '-n', '30', 'refs/remotes/origin/genspark_ai_developer').stdout.splitlines()
+    for i, l in enumerate(rl):
+        if 'forced-update' in l and i + 1 < len(rl):
+            new, old = l.split()[0], rl[i + 1].split()[0]
+            lost = sh('git', 'rev-list', old, '^' + new).stdout.split()
+            if lost: add('🔴', f'force-push で {len(lost)} commit 消失（{old[:7]}→{new[:7]}）。復元: git cherry-pick ' + ' '.join(x[:7] for x in reversed(lost)))
+    # 衝突マーカー（追跡ファイル）
+    g = sh('git', 'grep', '-l', '-E', '^(<<<<<<< |>>>>>>> )', '--', 'site', 'scripts', 'collab').stdout.split()
+    for f in g: add('🔴', f'衝突マーカー残存: {f}')
+    # 死にロック / 沈黙エージェント
+    for s in states():
+        age = now() - s.get('beat', 0)
+        if s.get('locks') and age > TTL: add('🟡', f'{s["id"]} のロック {len(s["locks"])}件は期限切れ（{age//60}分無音）→無効扱い')
+    # 実行環境
+    try:
+        mem = {l.split(':')[0]: int(l.split()[1]) for l in open('/proc/meminfo')}
+        av = mem.get('MemAvailable', 0) // 1024
+        add('🔴' if av < 120 else '🟡' if av < 250 else '🟢', f'MemAvailable {av}MB')
+    except Exception: pass
+    nb = len([l for l in sh('pgrep', '-f', 'chrome-headless-shell --type=renderer').stdout.split() if l])
+    if nb > 1: add('🔴', f'ヘッドレスブラウザ renderer {nb} 本（同時1本ルール違反の恐れ）')
+    st = sh('ss', '-ltnp').stdout
+    add('🟢' if ':8080' in st else '🟡', '8080 配信 ' + ('あり' if ':8080' in st else 'なし（誰か run_in_background で起動を）'))
+    ahead = sh('git', 'rev-list', '--count', 'origin/genspark_ai_developer..HEAD').stdout.strip()
+    if ahead not in ('', '0'): add('🟡', f'未push commit {ahead} 件（共有ツリー。sync で送る）')
+    os.makedirs(os.path.join(ROOT, 'collab/audit'), exist_ok=True)
+    open(os.path.join(ROOT, 'collab/audit/HEALTH.md'), 'w').write(
+        f'# HEALTH（`roles.py doctor` {iso()}）\n\n' + '\n'.join(f'- {lv} {m}' for lv, m in R) + '\n')
+    return sum(1 for lv, _ in R if lv == '🔴')
+
 if __name__ == '__main__':
     a = sys.argv[1:]
     if not a: print(__doc__); sys.exit(0)
     fn = globals().get('cmd_' + a[0])
     if not fn: print(__doc__); sys.exit(1)
-    r = fn(*a[1:]); sys.exit(1 if (a[0] == 'check' and r) else 0)
+    r = fn(*a[1:]); sys.exit(1 if (a[0] in ('check', 'doctor') and r) else 0)
