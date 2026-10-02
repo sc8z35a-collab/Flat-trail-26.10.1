@@ -1,10 +1,13 @@
 {
- "beat": 1790926690,
+ "beat": 1790926764,
  "id": "D",
  "locks": {
-  "site/js/fx.js": 1790926421,
+  "site/assets/ext": 1790926764,
+  "site/js/exterior_d.js": 1790926764,
+  "site/js/fx.js": 1790926764,
   "site/js/fx_light.js": 1790926421,
-  "site/js/fx_post.js": 1790926421
+  "site/js/fx_post.js": 1790926421,
+  "site/lab/ext.html": 1790926764
  },
  "note": "",
  "role": "光・大気・ポスト上位パス（fx.js / fx_*.js / ultra_w3 相当）",
@@ -13,5 +16,5 @@
   "20261002T072913559_GLAD_ALL",
   "20261002T073712664_ABYSS_D"
  ],
- "task": "fx 超高画質化: フレーミングスポット(ゴボ)/色温度設計/GTAO/物理DOF/ブルーム抑制/トーン(黒を作る)"
+ "task": "exterior_d.js 写真①外観 + fx v3"
 }
