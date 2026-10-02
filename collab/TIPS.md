@@ -34,3 +34,30 @@
 - 空気感: FogExp2 を暖灰色(#d9d4cc系)で薄く、光芒は低不透明度。トーンマッピングは AgX か ACES、露出控えめ。
 - 文字: キャプションは美術館の白プレート+墨文字（CanvasTexture）。ネオンの発光文字はやめる。
 - 影の更新コスト削減: renderer.shadowMap.autoUpdate=false にし、カメラ到着時/ライト切替時のみ needsUpdate=true。
+
+---
+# v2 細部作成のコツ（リーダーA, 2026-10-02 — 写真再現・超高精細版）
+## A. 「写真の通り」にする手順
+1. `collab/REFERENCES.md` の寸法を **定数として先頭に書く**（W/H/ベイ数/段数）。目分量でなく数値で作る。
+2. まず **グレーボックス（形と比率だけ）→ 撮影して写真と並べて比較** → 素材 → 光 → 細部、の順。形が違うと後の細部は無駄になる。
+3. 撮影は写真と **同じ画角** で（空撮は高度80m・俯角40°・FOV45、室内はカメラ高1.6m・FOV60）。`zone.html?zone=X&cam=x,y,z,lx,ly,lz` で固定できる。
+4. understand_images に「自分のスクショ」と「写真」を2枚並べて渡し、**差分を列挙させる**のが速い（UploadFileWrapper でURL化）。
+
+## B. 超高精細の作り方（性能無視OK、でも賢く）
+- **形の細部 > テクスチャ解像度**。モールディング（コーニス・巾木・額縁）は `ExtrudeGeometry`/`LatheGeometry` に
+  断面プロファイル（Shape）を与えて作る。直方体を並べない。角は必ず面取り（bevel / RoundedBoxGeometry）。
+- 繰り返し要素（柱・窓・ルーバー・パラソル・木・手すり子）は **InstancedMesh**。数千本でも1ドローコール。
+- PBR は Poly Haven / ambientCG（CC0）の 1k〜2k（diff/nor/arm）。`assets.pbr('assets/arch/marble_01', {repeat:[4,4]})`。
+  ライセンスと出典を CREDITS.md に。albedo は sRGB、normal/arm は Linear（assets.js が自動で設定）。
+- 象嵌床・フレスコ・看板などは **Canvas で生成（2048〜4096px）** してよい。幾何学模様はベクタで描けば無限に精細。
+- 金・大理石の映り込みは環境マップが命: ゾーンごとに **CubeCamera でそのゾーン自身を一度撮って PMREM** すると
+  本当に周囲が映る（world がゾーン完成後に `zone.env.envMap` 未指定なら自動生成する予定）。
+- 影: 静的なものは `castShadow` + `renderer.shadowMap.autoUpdate=false`（ctx.markShadow で更新要求）。接地感は
+  「接地影デカール（放射グラデ）」と「AO を焼き込んだ頂点カラー」で足す。
+- 植栽（森・生垣）: 球やアイコスフィアを頂点ノイズで変形 → InstancedMesh で数千本。色は2〜3トーンをインスタンスカラーで散らす。
+- 水: `three/addons/objects/Water2.js` か自作シェーダ（法線マップ2枚スクロール + フレネル + 空の反射）。
+
+## C. やってはいけない
+- update() 内で new / ライトの追加削除（再コンパイル地獄）/ 毎フレームの CanvasTexture 再生成。
+- 4096 テクスチャを数十枚（sandbox の 1GB が死ぬ）。巨大JPEGはリサイズしてからコミット（≦2048, 品質85）。
+- 他人のファイル編集・`git add -A`（autosave 以外）・ブラウザ2本同時起動。

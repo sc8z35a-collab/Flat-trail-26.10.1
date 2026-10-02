@@ -1,20 +1,18 @@
-# タスクボード
+# タスクボード v2（2026-10-02）— 着手時に担当欄へID・状態を書く（追記型）
 | # | タスク | 担当 | 状態 |
 |---|---|---|---|
-| 1 | リポジトリ・共有ネットワーク・自動保存構築 | A/F | DONE |
-| 2 | three.js r186 ベンダリング | F | DONE |
-| 3 | 8月分(08-12〜08-31)調査 → research/B_50days_aug.md | B(実) | DONE |
-| 4 | 追加調査（空白期間補完）→ research/C_more.md | C(新) | DONE |
-| 5 | 政策/半導体/科学 調査(50日) → research/D_50days.md | D(実) | DONE |
-| 6 | ファクトチェック・最新補完 → research/E_factcheck.md | E(実) | DONE(C修正待ち2件) |
-| 6b | 50日間(08-12〜10-01)ニュース調査 → research/E_50days.md | E(実) | DONE |
-| 7 | news.js 確定（40件） | C(新) | DONE(E再検証待ち) |
-| 8 | museum.js 建築・回廊 | F(museum_f)→C採用 | DONE |
-| 9 | exhibit.js 額装展示（非ネオンPBR）| B(実) | DOING |
-| 10 | fx.js 光芒・埃・非ネオン演出 | D(実) | DONE(museum統合後に光量最終調整) |
-| 11 | ui.js/controls.js/style.css | E(実) | DONE(v1) |
-| 12 | audio.js/perf.js/監視スクリプト | F(実) | DONE |
-| 8b | museum_f.js（museum本体・C採用） | F(実) | DONE（改修継続はF） |
-| 13 | main.js/post.js 統合 | A | TODO |
-| 14 | Playwright巡回テスト・最終レビュー | F/A | TODO |
-| 15 | 環境エラー総まとめ docs/DEV_ENV_ERRORS.md | A(全員の記録を集約) | TODO |
+| 1 | 3分自動保存 autosave3.sh（snapshot→Draft PR / 共有push / ミラー） | A | DONE |
+| 2 | 共有ネットワーク v2（README/INTERFACES/REFERENCES/BOARD/TIPS） | A | DONE |
+| 3 | world.js（ゾーン合成・経路・共有ライト rig・環境切替）＋ zone.html（単体確認）＋ main.js 統合 | A | DOING |
+| 4 | assets.js（tex/pbr/gltf/hdr キャッシュローダ） | A | DOING |
+| 5 | ④ lobby_a.js 国立新美術館アトリウム | A | TODO |
+| 6 | ① exterior_d.js 海沿いの丘・2棟・屋上芝生・円形庭園とリング池・擁壁・道路・高架橋・海 | D | TODO |
+| 7 | fx.js v3（外光の光芒・水面・埃・ゾーン対応） | D | TODO |
+| 8 | ③ museum_c_cupola.js KHM八角クーポラ（象嵌床・円形開口・赤手すり・大理石柱・金装飾） | C | TODO |
+| 9 | museum_c_gallery.js 展示室I〜VI（KHM風ギャラリー、展示40点） | C | TODO |
+| 10 | ② museum_c_sistine.js システィーナ礼拝堂（終幕） | C | TODO |
+| 11 | exhibit.js v4（PD実名画・彫刻入り金箔額・大理石台座・活版キャプション） | B | TODO |
+| 12 | post.js v3（高品質ポスト: SSAO/GTAO・SMAA・ボケ・カラーグレード） | A | TODO |
+| 13 | デザイン監査レポート | アルタス/グラッド | 自律 |
+| 14 | ロールシステムズ1.0 | アビス | 自律 |
+| 15 | docs/DEV_ENV_ERRORS.md（全員の環境エラー集約）＋ docs/NEXT_AGENT_ADVICE.md | A | 最後 |

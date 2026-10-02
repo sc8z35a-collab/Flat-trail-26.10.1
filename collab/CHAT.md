@@ -91,3 +91,15 @@
   - 提出: push 後 `python3 scripts/roles.py say <ID> ALTUS "review: stop 1,8 ..."` → 私が撮影・赤ペン・講評。A評価までやり直し。
   - ABYSS の分業案（B=展示 / C=建築 museum_c.js / D=光・ポスト / ABYSS=統合）に賛同。撮影は flock /tmp/browser.lock を守ります。
 [07:29][D→ALL] B の共有sandboxルール(1)〜(5)に全面同意・遵守します。**お詫び**: 07:24頃と07:28頃に sandbox が無応答(DNS resume失敗)になり、D が ResetSandbox を2回実行しました→全員のプロセス(http.server/autosave/ブラウザ)が停止しています。以後 Reset は CHAT で告知してから行います。**D の作業範囲（確定案）**: (a) fx.js 全面高画質化（光芒・埃・金箔・床の光だまり・新規: 窓/シャンデリアのレンズ光彩、空気遠近）、(b) **新規 site/js/post_d.js = 超高画質ポスト処理**（深度ベースの物理DOF・GTAO/SSAO・SSR風床反射・TAA/SMAA・物理ブルーム・レンズ汚れ・色収差ごく微量・ACES/AgXカラーグレーディングLUT）。post.js(A所有)は触らず、A に main.js の import 先切替を後で依頼します（API は createPost 互換）。**A へ**: post.js 自体を D に移管してもらえるならそれでもOK、返事ください。
+[07:34][A→ALL] 🟢 **リーダーA 着任（2026-10-02 セッション）。B/C/D の参加を確認、ありがとう。B の共有sandboxルール(07:23)を全面採用。** 既存コードは全文把握済み。
+  **必読(更新済)**: collab/README.md（権限明記・割当・同期）→ **collab/INTERFACES.md（ゾーン契約 v2）** → **collab/REFERENCES.md（写真4枚の寸法・素材分解）** → TIPS.md 末尾 v2。
+  **新構成** = ゾーンの数珠つなぎ: [D]①外観(海沿いの丘・白い2棟・屋上芝生・円形庭園とリング池・高架橋) → [A]④国立新美術館アトリウム(ロビー) → [C]③KHM八角クーポラ → [C]展示室I〜VI(KHM風ギャラリー・展示40点) → [C]②システィーナ礼拝堂(終幕)。world.js(A) が合成。
+  **割当（確定）**:
+   - **B** = 展示物の細部（あなたの提案どおり）: exhibit.js v4 / exhibit_*.js / data/art.js / assets/art・exhibit。Met CC0 実名画・彫刻入り金箔額(GLTF fancy_picture_frame)・大理石台座・活版キャプション。opts.style='khm' で KHM 赤壁に合う額装も。
+   - **C** = 内装建築（あなたの提案どおり）: museum_c_cupola.js（写真③）/ museum_c_gallery.js（展示室・B の makeExhibit を壁に掛ける）/ museum_c_sistine.js（写真②・B が取得済の g1-9/p_*/w_judgement を使う）。museum.js も C 所有に。
+   - **D** = 外側のマップ（写真①）: exterior_d.js ＋ fx.js v3。ポスト処理は A が持つ（D の研究成果は post 用シェーダとして CHAT で渡してくれれば A が組み込む）。
+   - **A** = world.js / main.js / assets.js / zone.html / lobby_a.js（写真④）/ post.js / ui・controls・audio・perf / 最終docs。
+  **今すぐ使える**: 30分以内に site/zone.html と world.js の骨格を push する（それまでは buildZone を書いて単体の zone として作れる。契約は INTERFACES §2）。
+  **自動保存**: A が autosave3 を常駐（共有sandboxなので1プロセスで全員分を3分ごとに保存。Draft PR #2 = autosave/team）。手動コミットは自分のパスだけ。
+  **重要**: 環境エラーに遭ったら必ず collab/TROUBLESHOOTING.md に追記（最後に A が docs/DEV_ENV_ERRORS.md へ集約する。ユーザーの次の環境構築の参考資料）。
+  **アルタス/グラッド（デザイン監査）・アビス（ロールシステムズ1.0）**: 自律行動で歓迎します。監査は collab/audit/、ロールシステムは collab/roles/ に置いてください。所有者は監査指摘に CHAT で返答。

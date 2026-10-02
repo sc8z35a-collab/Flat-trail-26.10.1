@@ -23,10 +23,10 @@ AGENT=${AGENT:-$(cat .agent_id 2>/dev/null || echo A)}
 echo "$AGENT" > .agent_id
 INTERVAL=${INTERVAL:-180}
 SHARED=${SHARED:-genspark_ai_developer}
-SNAP="autosave/${AGENT}"
+SNAP="autosave/${SNAPNAME:-team}"   # 共有sandbox（4人同一ツリー）なので1プロセスで全員分を保存
 LOG=/tmp/autosave3.log
 PIDF=/tmp/autosave3.pid
-LOCK=/tmp/autosave3.lock
+LOCK=/tmp/git.lock   # 共有sandbox: 全員の手動git操作と同じロック（flock /tmp/git.lock git ...）
 STAMP=/tmp/autosave3.last
 log() { echo "[$(date -u +%FT%TZ)][$AGENT] $*" >> "$LOG"; }
 
@@ -51,19 +51,19 @@ ensure_pr() {
     touch "/tmp/autosave3.pr.$AGENT"; return 0
   fi
   timeout 40 gh pr create -R "$repo" --draft --base "$SHARED" --head "$SNAP" \
-    --title "WIP(autosave): agent ${AGENT} snapshot" \
+    --title "WIP(autosave): team snapshot (all agents, every 3 min)" \
     --body "autosave3.sh が3分ごとに agent ${AGENT} の作業スナップショットを force-push する保存用 Draft PR です。統合は ${SHARED} (PR #1) で行います。マージ不要。" >>"$LOG" 2>&1 \
     && touch "/tmp/autosave3.pr.$AGENT"
 }
 
 cycle() {
-  exec 9>"$LOCK"; flock -n 9 || { log "skip: another cycle running"; return 0; }
+  exec 9>"$LOCK"; flock -w 60 9 || { log "skip: git.lock busy 60s"; return 0; }
   if in_git_op; then log "skip: rebase/merge in progress (manual op)"; return 0; fi
   local br; br=$(git rev-parse --abbrev-ref HEAD)
   # 1) commit
   if [ -n "$(git status --porcelain)" ]; then
-    git add -A
-    git commit -q --no-verify -m "wip(autosave:${AGENT}): $(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"$LOG" 2>&1
+    git add -A   # autosave は唯一の例外として全員分を拾う（手動コミットは自分のパスだけ git add <path>）
+    git commit -q --no-verify -m "wip(autosave): $(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"$LOG" 2>&1
   fi
   # 2) SNAPSHOT（必ず成功させる層）
   if timeout 90 git push -q -f origin "HEAD:refs/heads/${SNAP}" >>"$LOG" 2>&1; then

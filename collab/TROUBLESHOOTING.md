@@ -50,3 +50,17 @@
 
 ## [F] WebAudio の音を「聴いて」検証したい（サンドボックスにスピーカーが無い）
 - 解決: Playwright で `window.AudioContext = () => new OfflineAudioContext(2, sr*12, sr)` に差し替えてから audio.js を import → `startRendering()` → WAV化 → UploadFileWrapper → analyze_media_content(gemini-3.1-pro) で試聴レビュー。peak/rms も同時に測れる。
+
+---
+# v2 セッション（2026-10-02）
+## [A] sandbox が予告なく再起動し /tmp と常駐プロセスが消える（2回発生）
+- 症状: `uptime` が 1 min、/tmp 内のログ・pid が消失、autosave が DEAD。2回目はツールが「DNS retry failed / port is not open」で応答不能。
+- 原因: 共有 sandbox のメモリ枯渇（Playwright 2本同時起動 等）や基盤側のタイムアウト。
+- 解決: 応答不能なら ResetSandbox ツール（ファイルは保持される）。作業は autosave3 が3分ごとに GitHub へ逃がしているので消えない。
+  再起動後は `bash scripts/autosave3.sh status` → DEAD なら Bash run_in_background で `AGENT=X bash scripts/autosave3.sh loop`。
+  **pid/ログを /tmp に置く設計は再起動で消えるのが前提**（autosave3 は pid 消失でも二重起動しない作り）。
+## [A] Bash ツールでの単純な grep/ls が 120 秒タイムアウトした
+- 原因: 直前に裏で起動した pip/playwright install が CPU/IO を占有、かつ sandbox がフリーズ寸前だった。
+- 解決: 重いインストールは run_in_background で1本だけ。同時に重いコマンドを打たない。
+## [A] 空リポジトリ（ai-yosou-1year）が作業ディレクトリの origin に設定されていた
+- 解決: 実体のあるリポジトリ（Flat-trail-26.10.1）を origin に、空のほうを `backup` リモート（ミラー先）に付け替え。
