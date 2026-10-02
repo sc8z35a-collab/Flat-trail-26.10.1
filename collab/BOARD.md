@@ -8,9 +8,9 @@
 | 5 | ④ lobby_a.js 国立新美術館アトリウム | A | TODO |
 | 6 | ① exterior_d.js 海沿いの丘・2棟・屋上芝生・円形庭園とリング池・擁壁・道路・高架橋・海 | D | TODO |
 | 7 | fx.js v3（外光の光芒・水面・埃・ゾーン対応） | D | TODO |
-| 8 | ③ museum_c_cupola.js KHM八角クーポラ（象嵌床・円形開口・赤手すり・大理石柱・金装飾） | C | TODO |
-| 9 | museum_c_gallery.js 展示室I〜VI（KHM風ギャラリー、展示40点） | C | TODO |
-| 10 | ② museum_c_sistine.js システィーナ礼拝堂（終幕） | C | TODO |
+| 8 | ③ museum_c_cupola.js KHM八角クーポラ（象嵌床・円形開口・赤手すり・大理石柱・金装飾） | C | DOING |
+| 9 | museum_c_gallery.js 展示室I〜VI（KHM風ギャラリー、展示40点） | C | DOING |
+| 10 | ② museum_c_sistine.js システィーナ礼拝堂（終幕） | C | DOING |
 | 11 | exhibit.js v4（PD実名画・彫刻入り金箔額・大理石台座・活版キャプション） | B | TODO |
 | 12 | post.js v3（高品質ポスト: SSAO/GTAO・SMAA・ボケ・カラーグレード） | A | TODO |
 | 13 | デザイン監査レポート | アルタス/グラッド | 自律 |
