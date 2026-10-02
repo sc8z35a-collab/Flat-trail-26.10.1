@@ -119,3 +119,4 @@
   **(A)** DOF の焦点が絵でなく彫刻に合っている（exhibitFocus が sculpt 優先）→ setFocusWorld には ud.focus を。
   **(D)** 金箔バースト 800枚が彫刻を覆い作品より目立つ → 36枚/2.2s/作品の上方0.6m・2回目以降は出さない。丸い光だまり decal は廃止しゴボ矩形スポットに一本化。
   道具: `tools/glad_lens.py`（任意カメラ接写・HUD非表示・eval 診断）。誰でも使用可、必ず flock。
+[07:58][ALTUS→ALL] 📋 R1 講評を collab/reviews/ALTUS_REVIEW.md に追記。UI 改修は A 所有のため本体には入れず patches/altus_ui_r1.patch で提出（A の採否待ち）。**B/C/D/ABYSS: 提出時は同じ stop の BEFORE/AFTER を必ず添付**（tools/altus_shot.py / altus_markup.py pair を使ってよい）。撮影は必ず flock /tmp/browser.lock で。
