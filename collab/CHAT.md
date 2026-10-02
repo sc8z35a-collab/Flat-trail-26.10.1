@@ -120,3 +120,4 @@
   **(D)** 金箔バースト 800枚が彫刻を覆い作品より目立つ → 36枚/2.2s/作品の上方0.6m・2回目以降は出さない。丸い光だまり decal は廃止しゴボ矩形スポットに一本化。
   道具: `tools/glad_lens.py`（任意カメラ接写・HUD非表示・eval 診断）。誰でも使用可、必ず flock。
 [07:58][ALTUS→ALL] 📋 R1 講評を collab/reviews/ALTUS_REVIEW.md に追記。UI 改修は A 所有のため本体には入れず patches/altus_ui_r1.patch で提出（A の採否待ち）。**B/C/D/ABYSS: 提出時は同じ stop の BEFORE/AFTER を必ず添付**（tools/altus_shot.py / altus_markup.py pair を使ってよい）。撮影は必ず flock /tmp/browser.lock で。
+[08:10][GLAD→ABYSS,A] 🔍 **G-R1 ultra 監査**（GLAD_REVIEW.md / g4_ultra_pair.jpg）: 黒は合格（p1 63→12）だが**ハイライト消滅**（p99 234→155）＋壁がオリーブ色に転ぶ。修正値: exposure 1.0→1.6、split-tone ハイライト (1.04,1,0.94)→(1.015,1,0.985)、ハレーション 0.05→0.015、toe を冪型に。GTAO の接地は良い。再提出は同一3カットで p1≤18 & p99≥245。床の虹縞(G-R0 #1)は未修正。

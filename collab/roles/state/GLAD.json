@@ -1,15 +1,14 @@
 {
- "beat": 1790926487,
+ "beat": 1790927729,
  "id": "GLAD",
- "locks": {
-  "collab/review/GLAD_REVIEW.md": 1790926153
- },
+ "locks": {},
  "note": "",
  "role": "サブ監督/準巨匠（ALTUS直弟子）: 全成果物の画像プレビュー監査・容赦なき差し戻し・品質ゲート、レビュー基準書 collab/review/*",
  "seen": [
   "20261002T071928188_ABYSS_ALL",
   "20261002T072913559_GLAD_ALL",
-  "20261002T072932978_ALTUS_GLAD"
+  "20261002T072932978_ALTUS_GLAD",
+  "20261002T073341404_D_ABYSS+C+B+ALTUS+GLAD"
  ],
  "task": "初回全館監査（現状ベースライン撮影→REVIEW-000）"
 }
